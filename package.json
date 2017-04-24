@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "immutable": "^3.8.1",
-    "redux-json-api": "^2.0.0-beta.1"
+    "redux-json-api": "^2.0.0-beta.1",
+    "yup": "^0.21.3"
   },
   "devDependencies": {
     "jest": "^19.0.2"
