@@ -10,26 +10,26 @@ describe('Registry', () => {
       expect(Registry.get('Test')).toBe(Test);
     });
 
-    test('sets the store on the class', () => {
+    test('sets the store on the class\'s context', () => {
       class Test2 {}
-      Registry.setStore(store);
+      Registry.store = store;
       Registry.register(Test2);
-      expect(Registry.get('Test2').store).toEqual(store);
+      expect(Registry.get('Test2').context.store).toEqual(store);
     });
   });
 
-  describe('.setStore()', () => {
+  describe('.store=', () => {
     const store = 'store2';
 
     test('sets the store on the Registry', () => {
-      Registry.setStore(store);
+      Registry.store = store;
       expect(Registry.store).toEqual(store);
     });
 
-    test('sets the store on registered models', () => {
-      Registry.setStore(store);
+    test('sets the store on registered models\' context', () => {
+      Registry.store = store;
       expect(Registry.store).toEqual(store);
-      expect(Registry.get('Test').store).toEqual(store);
+      expect(Registry.get('Test').context.store).toEqual(store);
     });
   });
 });
