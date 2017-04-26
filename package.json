@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "lint": "eslint .",
     "test": "jest --verbose"
   },
   "dependencies": {
@@ -12,9 +13,12 @@
     "yup": "^0.21.3"
   },
   "devDependencies": {
+    "@coverhound/eslint-config-coverhound": "^1.0.1",
     "babel-jest": "^19.0.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^3.19.0",
+    "eslint-plugin-jest": "^19.0.1",
     "jest": "^19.0.2",
     "jest-cli": "^19.0.2"
   }
