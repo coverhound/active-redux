@@ -1,4 +1,4 @@
-import { defineAttribute } from '../../src/model/attributes';
+import { defineAttribute } from '../../src/model/attribute';
 
 describe('defineAttribute()', () => {
   let example;
