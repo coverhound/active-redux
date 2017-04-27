@@ -1,25 +1,27 @@
-// should these even need to be within the module
-// or can they be part of the exported object?
-let store;
-const __registry__ = {};
+import 'babel-polyfill';
 
-const Registry = {
+class Registry {
+  constructor() {
+    this.__registry__ = {};
+    this.__context__ = {};
+  }
+
   get store() {
-    return store;
-  },
-  register(model) {
-    if (this.store) model.store = store;
-    __registry__[model.name] = model;
-  },
-  get(model) {
-    return __registry__[model];
-  },
-  setStore(newStore) {
-    store = newStore;
-    Object.values(__registry__).forEach(
-      (model) => model.store = newStore
-    );
-  },
-};
+    return this.__context__.store;
+  }
 
-export default Registry;
+  set store(store) {
+    this.__context__.store = store;
+  }
+
+  get(name) {
+    return this.__registry__[name];
+  }
+
+  register(model) {
+    model.context = this.__context__;
+    this.__registry__[model.name] = model;
+  }
+}
+
+export default new Registry();
