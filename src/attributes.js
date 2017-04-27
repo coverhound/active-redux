@@ -1,5 +1,15 @@
 import yup from 'yup';
 
+export const hasOne = () => ({
+  type: 'relationship',
+  array: false,
+});
+
+export const hasMany = () => ({
+  type: 'relationships',
+  array: true,
+});
+
 export const string = ({ default: defaultValue } = {}) => (obj) => (
   yup.string().default(defaultValue).nullable().cast(obj)
 );
