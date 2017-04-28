@@ -3,7 +3,7 @@ import { Attr } from '../src';
 const testNoDefault = (type) => {
   describe('with no default set', () => {
     test('undefined stays undefined', () => {
-      const casting = Attr[type]();
+      const casting = Attr[type]().cast;
       expect(casting(undefined)).toEqual(undefined);
     });
   });
@@ -26,7 +26,7 @@ describe('Attr', () => {
     testNoDefault('string');
 
     describe('with a default set', () => {
-      const casting = Attr.string({ default: defaultValue });
+      const casting = Attr.string({ default: defaultValue }).cast;
 
       testDefault(casting, defaultValue);
 
@@ -46,7 +46,7 @@ describe('Attr', () => {
     testNoDefault('number');
 
     describe('with a default set', () => {
-      const casting = Attr.number({ default: defaultValue });
+      const casting = Attr.number({ default: defaultValue }).cast;
 
       testDefault(casting, defaultValue);
 
@@ -66,7 +66,7 @@ describe('Attr', () => {
     testNoDefault('date');
 
     describe('with a default set', () => {
-      const casting = Attr.date({ default: defaultValue });
+      const casting = Attr.date({ default: defaultValue }).cast;
 
       testDefault(casting, defaultValue);
 
@@ -95,7 +95,7 @@ describe('Attr', () => {
     testNoDefault('boolean');
 
     describe('with a default set', () => {
-      const casting = Attr.boolean({ default: defaultValue });
+      const casting = Attr.boolean({ default: defaultValue }).cast;
 
       testDefault(casting, defaultValue);
 
@@ -116,7 +116,7 @@ describe('Attr', () => {
   });
 
   describe('.array()', () => {
-    const casting = Attr.array();
+    const casting = Attr.array().cast;
 
     test('wraps non-arrays in an array', () => {
       const date = new Date();
@@ -132,7 +132,7 @@ describe('Attr', () => {
   });
 
   describe('.object()', () => {
-    const casting = Attr.object();
+    const casting = Attr.object().cast;
 
     test('turns non-objects into an object', () => {
       expect(casting('foo')).toEqual({});
