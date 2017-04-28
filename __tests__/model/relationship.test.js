@@ -28,33 +28,31 @@ describe('defineRelationship()', () => {
   }
 
   describe('hasOne', () => {
-    const value = { array: false };
     const key = 'user';
     beforeEach(() => { context = class extends Example {} });
 
     test('reads the relationship', () => {
-      defineRelationship({ context, key, value });
+      defineRelationship({ context, key, array: false });
       expect(new context(data).user).toBe(user);
     });
 
     test('calls constructor.find() with the relationship', () => {
-      defineRelationship({ context, key, value });
+      defineRelationship({ context, key, array: false });
       expect(lastCall(find)[0]).toEqual(userData);
     });
   });
 
   describe('hasMany', () => {
-    const value = { array: true };
     const key = 'posts';
     beforeEach(() => { context = class extends Example {} });
 
     test('reads the relationship', () => {
-      defineRelationship({ context, key, value });
+      defineRelationship({ context, key, array: true });
       expect(new context(data).posts).toBe(posts);
     });
 
     test('calls constructor.findAll() with the relationship', () => {
-      defineRelationship({ context, key, value });
+      defineRelationship({ context, key, array: true });
       expect(lastCall(findAll)[0]).toEqual(postsData);
     });
   });

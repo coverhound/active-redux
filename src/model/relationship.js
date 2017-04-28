@@ -16,8 +16,6 @@ const defineHasMany = ({ context, key }) => {
   });
 };
 
-export const defineRelationship = ({ context, key, value }) => {
-  value.array ?
-    defineHasMany({ context, key }) :
-    defineHasOne({ context, key });
+export const defineRelationship = ({ context, key, array }) => {
+  array ? defineHasMany({ context, key }) : defineHasOne({ context, key });
 };

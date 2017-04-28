@@ -2,13 +2,15 @@ import { missingStore } from '../errors';
 import { defineAttribute } from './attribute';
 import { defineRelationship } from './relationship';
 
+const defineType = {
+  attribute: defineAttribute,
+  relationship: defineRelationship,
+};
+
 const defineMethods = ({ context, attributes }) => {
   Object.keys(attributes).forEach((key) => {
-    const value = attributes[key];
-
-    typeof value === 'function' ?
-      defineAttribute({ context, key, cast: value }) :
-      defineRelationship({ context, key, value })
+    const attribute = attributes[key];
+    defineType[attribute.type]({ context, key, ...attribute });
   });
 };
 
