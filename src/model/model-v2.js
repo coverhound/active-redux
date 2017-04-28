@@ -1,9 +1,6 @@
-import Query from './query';
-import {
-  missingStore,
-} from '../errors';
+import Store from './store';
 
-class Model extends Query {
+class Model extends Store {
   constructor(data) {
     super(data);
 
@@ -44,11 +41,6 @@ class Model extends Query {
           : this.constructor.findOne(data.type, data.id);
       }
     });
-  }
-
-  static get dispatch() {
-    if (!this.store) throw missingStore();
-    return this.store.dispatch;
   }
 
   get type() {

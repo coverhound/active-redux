@@ -1,4 +1,13 @@
-class Query {
+import {
+  missingStore,
+} from '../errors';
+
+class Store {
+  static get dispatch() {
+    if (!this.store) throw missingStore();
+    return this.store.dispatch;
+  }
+
   static findOne(type = this.type, id) {
     return this.store[type].filter((entity) => id === entity.id)[0];
   }
@@ -10,4 +19,4 @@ class Query {
   static where() {}
 }
 
-export default Query;
+export default Store;
