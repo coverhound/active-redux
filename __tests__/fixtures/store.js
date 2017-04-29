@@ -1,6 +1,6 @@
 export default {
-  people: [
-    {
+  people: {
+    9: {
       type: 'people',
       id: '9',
       attributes: {
@@ -12,9 +12,9 @@ export default {
         self: 'http://example.com/people/9'
       }
     }
-  ],
-  comments: [
-    {
+  },
+  comments: {
+    5: {
       type: 'comments',
       id: '5',
       attributes: {
@@ -29,7 +29,7 @@ export default {
         self: 'http://example.com/comments/5'
       }
     },
-    {
+    12: {
       type: 'comments',
       id: '12',
       attributes: {
@@ -44,5 +44,5 @@ export default {
         self: 'http://example.com/comments/12'
       }
     }
-  ]
+  }
 };

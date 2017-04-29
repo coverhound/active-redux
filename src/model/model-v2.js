@@ -37,8 +37,8 @@ class Model extends Store {
         const data = this.data.relationships[field].data;
 
         return relationship.array
-          ? this.constructor.findAll(data[0].type, data.map((d) => d.id))
-          : this.constructor.findOne(data.type, data.id);
+          ? this.constructor.find({ id: data.map((d) => d.id) }, data[0].type)
+          : this.constructor.findById(data.id, data.type);
       }
     });
   }
