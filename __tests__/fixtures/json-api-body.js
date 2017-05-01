@@ -40,7 +40,10 @@ export default {
     attributes: {
       'first-name': 'Dan',
       'last-name': 'Gebhardt',
-      twitter: 'dgeb'
+      twitter: 'dgeb',
+      address: {
+        road: '123 Main St'
+      }
     },
     links: {
       self: 'http://example.com/people/9'

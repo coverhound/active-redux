@@ -2,3 +2,4 @@
 .solano*
 .npmrc
 .vimrc
+/coverage

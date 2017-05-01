@@ -1,46 +1,52 @@
-import { missingStore } from '../errors';
-import { defineAttribute } from './attribute';
-import { defineRelationship } from './relationship';
+import Store from './store';
+import { invalidAttribute } from '../errors';
 
-const defineType = {
-  attribute: defineAttribute,
-  relationship: defineRelationship,
-};
-
-const defineMethods = ({ context, attributes }) => {
-  Object.keys(attributes).forEach((key) => {
-    const attribute = attributes[key];
-    defineType[attribute.type]({ context, key, ...attribute });
-  });
-};
-
-class Model {
+class Model extends Store {
   constructor(data) {
+    super(data);
+
     this.data = data;
   }
 
-  static type = 'models';
-  static attributes = {};
-  static context = {};
-
   static __defineMethods__() {
-    defineMethods({ context: this, attributes: this.attributes });
+    Object.entries(this.attributes || {}).forEach(([field, attribute]) => {
+      switch (attribute.type) {
+        case 'attribute':
+          this.__defineAttribute__(field, attribute);
+          break;
+        case 'relationship':
+          this.__defineRelationship__(field, attribute);
+          break;
+        default:
+          throw invalidAttribute(field);
+      }
+    });
   }
 
-  static get dispatch() {
-    if (!this.context.store) throw missingStore();
-    return this.context.store.dispatch;
+  static __defineAttribute__(field, attribute) {
+    Object.defineProperty(this.prototype, field, {
+      get() {
+        return attribute.cast(this.data.attributes[field]);
+      },
+    });
+  }
+
+  static __defineRelationship__(field) {
+    Object.defineProperty(this.prototype, field, {
+      get() {
+        const relationship = this.constructor.attributes[field];
+        const data = this.data.relationships[field].data;
+
+        return relationship.array
+          ? this.constructor.find({ id: data.map((d) => d.id) }, data[0].type)
+          : this.constructor.findById(data.id, data.type);
+      }
+    });
   }
 
   get type() {
     return this.constructor.type;
   }
-
-  update(data) {}
-  save() {}
-
-  static find() {}
-  static where() {}
 }
 
 export default Model;

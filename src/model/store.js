@@ -1,15 +1,24 @@
 import {
   missingStore,
 } from '../errors';
+import { deepPartialEqual } from '../helpers';
 
 class Store {
   static context = {};
 
-  static get store() { return this.context.store; }
-  static set store(value) { this.context.store = value; }
+  static get store() {
+    if (!this.context.store) {
+      throw missingStore();
+    }
+
+    return this.context.store;
+  }
+
+  static set store(value) {
+    this.context.store = value;
+  }
 
   static get dispatch() {
-    if (!this.store) throw missingStore();
     return this.store.dispatch;
   }
 
@@ -28,6 +37,9 @@ class Store {
         const lookup = query[field];
         if (Array.isArray(lookup)) {
           return lookup.includes(value);
+        }
+        if (typeof lookup === 'object') {
+          return deepPartialEqual(lookup, value);
         }
         return lookup === value;
       }, false)

@@ -6,10 +6,28 @@ export default {
       attributes: {
         'first-name': 'Dan',
         'last-name': 'Gebhardt',
-        twitter: 'dgeb'
+        twitter: 'dgeb',
+        address: {
+          road: '123 Main St'
+        }
       },
       links: {
         self: 'http://example.com/people/9'
+      }
+    },
+    14: {
+      type: 'people',
+      id: '14',
+      attributes: {
+        'first-name': 'Bob',
+        'last-name': 'Dyland',
+        twitter: 'shredmaster',
+        address: {
+          road: 'A different Road'
+        }
+      },
+      links: {
+        self: 'http://example.com/people/14'
       }
     }
   },
