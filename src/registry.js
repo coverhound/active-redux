@@ -20,6 +20,7 @@ class Registry {
 
   register(model) {
     model.context = this.__context__;
+    model.__defineMethods__ && model.__defineMethods__();
     this.__registry__[model.name] = model;
   }
 }
