@@ -1,6 +1,9 @@
 module.exports = {
-  "extends": "@coverhound/coverhound",
+  extends: '@coverhound/coverhound',
   env: {
-    "jest/globals": true,
+    'jest/globals': true
   },
+  plugins: [
+    'jest'
+  ]
 };

@@ -5,7 +5,11 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",
-    "test": "jest --verbose"
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:verbose": "jest --verbose",
+    "test:watch": "jest --watch",
+    "example": "cd example && npm start"
   },
   "dependencies": {
     "immutable": "^3.8.1",
@@ -22,5 +26,11 @@
     "eslint-plugin-jest": "^19.0.1",
     "jest": "^19.0.2",
     "jest-cli": "^19.0.2"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/fixtures/"
+    ]
   }
 }

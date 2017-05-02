@@ -1,12 +1,7 @@
 export const missingStore = () => (
-  new Error(
-    ```
-    No store provided to model
-    [link to debug]
-    ```
-  )
+  new Error('A store has not been registered in the Registry')
 );
 
-export const updateImmutable = () => (
-  new Error(`Cannot update an immutable Model`)
+export const invalidAttribute = (field) => (
+  new Error(`${field} needs an attribute type`)
 );
