@@ -13,8 +13,7 @@
     "example": "cd example && npm start"
   },
   "dependencies": {
-    "immutable": "^3.8.1",
-    "redux-json-api": "^2.0.0-beta.1",
+    "object-path-immutable": "^0.5.0",
     "yup": "^0.21.3"
   },
   "devDependencies": {
@@ -28,10 +27,18 @@
     "jest": "^20.0.3",
     "jest-cli": "^20.0.3"
   },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.0.0-0",
+    "react-redux": "^5.0.0"
+  },
   "jest": {
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/fixtures/"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^active-redux(.*)": "<rootDir>/src$1",
+      "fixtures(.*)": "<rootDir>/__tests__/fixtures$1"
+    }
   }
 }

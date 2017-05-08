@@ -1,7 +1,7 @@
-import Registry from '../src/registry';
-import { Attr, Model } from '../src';
-import mockStore from './fixtures/store';
-import jsonApiData from './fixtures/json-api-body';
+import { Attr, Model } from 'active-redux';
+import Registry from 'active-redux/registry';
+import mockStore from 'fixtures/store';
+import jsonApiData from 'fixtures/json-api-body';
 
 const data = jsonApiData.data[0];
 const [_, ...comments] = jsonApiData.included;

@@ -1,4 +1,4 @@
-import Registry from '../src/registry';
+import Registry from 'active-redux/registry';
 
 describe('Registry', () => {
   describe('.register()', () => {
