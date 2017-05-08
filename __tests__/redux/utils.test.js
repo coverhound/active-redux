@@ -165,4 +165,42 @@ describe('Utils', () => {
       });
     });
   });
+
+  describe('markPendingResources()', () => {
+    const state = { resources: { people: {
+      1: {},
+      2: {},
+      3: {},
+    } } };
+
+    test('marks a single resouurce', () => {
+      const resource = { data: { type: 'people', id: 1 } };
+      const expected = { resources: { people: {
+        1: { isPending: true },
+        2: {},
+        3: {}
+      } } };
+      expect(utils.markPendingResources(state, resource)).toEqual(expected);
+    });
+
+    test('marks multiple resouurces', () => {
+      const resources = { data: [
+        { type: 'people', id: 1 },
+        { type: 'people', id: 3 }
+      ] };
+      const expected = { resources: { people: {
+        1: { isPending: true },
+        2: {},
+        3: { isPending: true }
+      } } };
+      expect(utils.markPendingResources(state, resources)).toEqual(expected);
+    });
+
+    test('doesn\'t mutate the original object', () => {
+      const resource = { data: { type: 'people', id: 1 } };
+      const expected = JSON.parse(JSON.stringify(state));
+      utils.markPendingResources(state, resource);
+      expect(state).toEqual(expected);
+    });
+  });
 });

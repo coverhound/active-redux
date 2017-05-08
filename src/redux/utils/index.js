@@ -26,14 +26,14 @@ export const mergeResources = (state, { data, included = [] }) => {
   return newState.value();
 };
 
-export const clearResources = (state, resources) => {
-  switch (typeof resources) {
+export const clearResources = (state, data) => {
+  switch (typeof data) {
     case 'object': {
-      if (Array.isArray(resources)) return resources.reduce(clearResources, state);
-      const { type, id } = resources;
+      if (Array.isArray(data)) return data.reduce(clearResources, state);
+      const { type, id } = data;
       return imm.del(state, ['resources', type, id]);
     }
-    case 'string': return imm.set(state, ['resources', resources], {});
+    case 'string': return imm.set(state, ['resources', data], {});
     case 'undefined': return imm.set(state, 'resources', {});
     default: return state;
   }
@@ -43,4 +43,18 @@ export const createAction = (type) => (payload) => ({ type, payload });
 
 export const createReducer = (mappings, initialState) => (state = initialState, action) => (
   mappings[action.type] ? mappings[action.type](state, action) : state
+);
+
+export const hasProperty = (object, ...keys) => (
+  keys.reduce((acc, key) => {
+    if (acc === undefined) return acc;
+    return acc[key];
+  }, object)
+);
+
+export const markPendingResources = (state, { data }) => (
+  resourcesArray(data).reduce((acc, resource) => {
+    if (!hasProperty(state, 'resources', resource.type, resource.id)) return acc;
+    return acc.set(['resources', resource.type, resource.id, 'isPending'], true);
+  }, imm(state)).value()
 );
