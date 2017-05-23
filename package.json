@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
+    "test:ci": "jest --ci",
     "test:coverage": "jest --coverage",
     "test:verbose": "jest --verbose",
     "test:watch": "jest --watch",
@@ -24,8 +25,8 @@
     "babel-preset-stage-0": "^6.24.1",
     "eslint": "^3.19.0",
     "eslint-plugin-jest": "^19.0.1",
-    "jest": "^19.0.2",
-    "jest-cli": "^19.0.2"
+    "jest": "^20.0.3",
+    "jest-cli": "^20.0.3"
   },
   "jest": {
     "testPathIgnorePatterns": [

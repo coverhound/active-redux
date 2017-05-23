@@ -1,0 +1,4 @@
+hooks:
+  pre_setup: yarn install --force
+tests:
+  - yarn test:ci
