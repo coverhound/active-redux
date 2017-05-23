@@ -16,7 +16,6 @@ describe('Registry Integration', () => {
       }
     }
 
-    Article.__defineMethods__();
     Registry.register(Article);
     const RegisteredArticle = Registry.get('Article');
     subject = new RegisteredArticle(data);
