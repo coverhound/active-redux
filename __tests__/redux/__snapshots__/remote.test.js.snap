@@ -1,0 +1,222 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`remoteReducer actions apiConfigure() updates the apiConfig key 1`] = `
+Object {
+  "apiConfig": Object {
+    "baseUrl": "http://coverhound.com/api",
+  },
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {},
+}
+`;
+
+exports[`remoteReducer actions remoteClear() clears the resource 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {
+    "people": Object {},
+  },
+}
+`;
+
+exports[`remoteReducer actions remoteCreate() increments isCreating 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 1,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {},
+}
+`;
+
+exports[`remoteReducer actions remoteCreate() populates the state with resources 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {
+    "people": Object {
+      "5": Object {
+        "attributes": Object {
+          "age": 25,
+          "hair": "black",
+        },
+        "id": 5,
+        "type": "people",
+      },
+    },
+  },
+}
+`;
+
+exports[`remoteReducer actions remoteDelete() increments isDeleting and marks the resource as pending 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 1,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {
+    "people": Object {
+      "2": Object {
+        "attributes": Object {
+          "name": "Yangster",
+        },
+      },
+      "5": Object {
+        "attributes": Object {
+          "name": "Johnny",
+        },
+        "isPending": true,
+      },
+    },
+  },
+}
+`;
+
+exports[`remoteReducer actions remoteDelete() removes the resources from the store 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {
+    "people": Object {
+      "2": Object {
+        "attributes": Object {
+          "name": "Yangster",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`remoteReducer actions remoteHydrate() populates the state with resources 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {
+    "people": Object {
+      "5": Object {
+        "attributes": Object {
+          "age": 25,
+          "hair": "black",
+        },
+        "id": 5,
+        "type": "people",
+      },
+    },
+  },
+}
+`;
+
+exports[`remoteReducer actions remoteRead() increments isReading 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 1,
+  "isUpdating": 0,
+  "resources": Object {},
+}
+`;
+
+exports[`remoteReducer actions remoteRead() populates the state with resources 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {
+    "people": Object {
+      "5": Object {
+        "attributes": Object {
+          "age": 25,
+          "hair": "black",
+        },
+        "id": 5,
+        "type": "people",
+      },
+    },
+  },
+}
+`;
+
+exports[`remoteReducer actions remoteUpdate() increments isUpdating and marks the resource as pending 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 1,
+  "resources": Object {
+    "people": Object {
+      "2": Object {
+        "attributes": Object {
+          "name": "Yangster",
+        },
+      },
+      "5": Object {
+        "attributes": Object {
+          "name": "Johnny",
+        },
+        "isPending": true,
+      },
+    },
+  },
+}
+`;
+
+exports[`remoteReducer actions remoteUpdate() updates the state with resources 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {
+    "people": Object {
+      "2": Object {
+        "attributes": Object {
+          "name": "Yangster",
+        },
+      },
+      "5": Object {
+        "attributes": Object {
+          "age": 25,
+          "hair": "black",
+        },
+        "id": 5,
+        "type": "people",
+      },
+    },
+  },
+}
+`;
+
+exports[`remoteReducer initialState has an empty resources object 1`] = `
+Object {
+  "apiConfig": Object {},
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {},
+}
+`;
