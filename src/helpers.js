@@ -1,5 +1,9 @@
 export const deepPartialEqual = (obj1, obj2) =>
   Object.entries(obj1).reduce((equal, [key, value]) => {
+    if (equal === false) {
+      return equal;
+    }
+
     if (typeof value === 'object' && !Array.isArray(value)) {
       return deepPartialEqual(value, obj2[key]);
     }

@@ -9,7 +9,7 @@ import {
   markPendingResources,
   mergeResources,
   resourcesArray,
-} from '../utils';
+} from './utils';
 
 const initialState = {
   resources: {},

@@ -2,7 +2,7 @@ import 'babel-polyfill';
 
 class Registry {
   constructor() {
-    this.__registry__ = {};
+    this.__models__ = {};
     this.__context__ = {};
   }
 
@@ -15,13 +15,13 @@ class Registry {
   }
 
   get(name) {
-    return this.__registry__[name];
+    return this.__models__[name];
   }
 
   register(model) {
     model.context = this.__context__;
     model.__defineMethods__ && model.__defineMethods__();
-    this.__registry__[model.name] = model;
+    this.__models__[model.name] = model;
   }
 }
 

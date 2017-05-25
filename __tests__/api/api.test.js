@@ -1,8 +1,8 @@
-import * as subject from 'active-redux/redux/remote';
-import * as ActionTypes from 'active-redux/redux/remote/constants';
-import { createAction } from 'active-redux/redux/utils';
+import * as subject from 'active-redux/api';
+import * as ActionTypes from 'active-redux/api/constants';
+import { createAction } from 'active-redux/api/utils';
 
-describe('remoteReducer', () => {
+describe('reducer', () => {
   const person = {
     type: 'people',
     id: 5,
@@ -28,12 +28,12 @@ describe('remoteReducer', () => {
 
   describe('initialState', () => {
     it('has an empty resources object', () => {
-      expect(subject.remoteReducer(undefined, {})).toMatchSnapshot();
+      expect(subject.reducer(undefined, {})).toMatchSnapshot();
     });
   });
 
   describe('actions', () => {
-    const reduce = subject.remoteReducer;
+    const reduce = subject.reducer;
 
     describe('apiConfigure()', () => {
       it('updates the apiConfig key', () => {

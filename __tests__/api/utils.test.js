@@ -1,4 +1,4 @@
-import * as utils from 'active-redux/redux/utils';
+import * as utils from 'active-redux/api/utils';
 
 describe('Utils', () => {
   const person = { type: 'people', id: 1, attributes: {} };

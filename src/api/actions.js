@@ -1,5 +1,5 @@
 import * as ActionTypes from './constants';
-import { createAction, apiRequest } from '../utils';
+import { createAction, apiClient } from './utils';
 
 const wrappedApiRequest = ({
   resource,
@@ -8,7 +8,7 @@ const wrappedApiRequest = ({
   dispatch,
   success,
   failure,
-}) => apiRequest(endpoint, options).then((json) => {
+}) => apiClient(endpoint, options).then((json) => {
   dispatch(success(json));
   return Promise.resolve(json);
 }).catch((error) => {
@@ -93,7 +93,7 @@ export const remoteDelete = ({ resource, endpoint = `${resource.type}${resource.
     };
 
     dispatch(remoteWillDelete(resource));
-    return apiRequest(endpoint, options).then((json) => {
+    return apiClient(endpoint, options).then((json) => {
       dispatch(remoteDeleteDone(resource));
       return Promise.resolve(json);
     }).catch((error) => {
