@@ -24,7 +24,7 @@ describe('Registry Integration', () => {
   describe('Querying the store', () => {
     test('Registered model can query store', () => {
       Registry.store = mockStore;
-      expect(subject.comments).toEqual(comments);
+      expect(subject.comments.length).toEqual(comments.length);
     });
 
     test('should throw if store is not set', () => {

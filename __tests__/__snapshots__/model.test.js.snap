@@ -1,0 +1,138 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Model #find should allow arrays as lookup value 1`] = `
+Array [
+  Model {
+    "data": Object {
+      "attributes": Object {
+        "body": "First!",
+      },
+      "id": "5",
+      "links": Object {
+        "self": "http://example.com/comments/5",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "2",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+  Model {
+    "data": Object {
+      "attributes": Object {
+        "body": "I like XML better",
+      },
+      "id": "12",
+      "links": Object {
+        "self": "http://example.com/comments/12",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+]
+`;
+
+exports[`Model #find should return an array of values matching a query 1`] = `
+Array [
+  Model {
+    "data": Object {
+      "attributes": Object {
+        "body": "First!",
+      },
+      "id": "5",
+      "links": Object {
+        "self": "http://example.com/comments/5",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "2",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+]
+`;
+
+exports[`Model #find should search for nested properties 1`] = `
+Array [
+  Model {
+    "data": Object {
+      "attributes": Object {
+        "address": Object {
+          "road": "123 Main St",
+        },
+        "first-name": "Dan",
+        "last-name": "Gebhardt",
+        "twitter": "dgeb",
+      },
+      "id": "9",
+      "links": Object {
+        "self": "http://example.com/people/9",
+      },
+      "type": "people",
+    },
+  },
+]
+`;
+
+exports[`Model #findAll should return all values from a resource store 1`] = `
+Array [
+  Model {
+    "data": Object {
+      "attributes": Object {
+        "body": "First!",
+      },
+      "id": "5",
+      "links": Object {
+        "self": "http://example.com/comments/5",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "2",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+  Model {
+    "data": Object {
+      "attributes": Object {
+        "body": "I like XML better",
+      },
+      "id": "12",
+      "links": Object {
+        "self": "http://example.com/comments/12",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+]
+`;
