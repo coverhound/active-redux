@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Model #find should allow arrays as lookup value 1`] = `
+exports[`Model Store #find should allow arrays as lookup value 1`] = `
 Array [
   Model {
     "data": Object {
@@ -45,7 +45,7 @@ Array [
 ]
 `;
 
-exports[`Model #find should return an array of values matching a query 1`] = `
+exports[`Model Store #find should return an array of values matching a query 1`] = `
 Array [
   Model {
     "data": Object {
@@ -70,7 +70,7 @@ Array [
 ]
 `;
 
-exports[`Model #find should search for nested properties 1`] = `
+exports[`Model Store #find should search for nested properties 1`] = `
 Array [
   Model {
     "data": Object {
@@ -92,7 +92,7 @@ Array [
 ]
 `;
 
-exports[`Model #findAll should return all values from a resource store 1`] = `
+exports[`Model Store #findAll should return all values from a resource store 1`] = `
 Array [
   Model {
     "data": Object {

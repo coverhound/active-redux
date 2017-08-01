@@ -72,36 +72,58 @@ describe('Model', () => {
     });
   });
 
-  describe('#dispatch', () => {
-    test('provides a getter for store dispatch', () => {
-      expect(Model.dispatch).toBeInstanceOf(Function);
+  describe('Store', () => {
+    describe('#dispatch', () => {
+      test('provides a getter for store dispatch', () => {
+        expect(Model.dispatch).toBeInstanceOf(Function);
+      });
+    });
+
+    describe('#findById', () => {
+      test('should find an entity in store by id', () => {
+        const response = Model.findById(5, 'comments');
+        expect(response.body).toEqual(apiState.comments[5].body);
+      });
+    });
+
+    describe('#findAll', () => {
+      test('should return all values from a resource store', () => {
+        const response = Model.findAll('comments');
+
+        expect(response).toMatchSnapshot();
+      });
+    });
+
+    describe('#find', () => {
+      test('should return an array of values matching a query', () => {
+        const response = Model.find({
+          attributes: {
+            body: 'First!',
+          },
+        }, 'comments');
+        expect(response).toMatchSnapshot();
+      });
+
+      test('should allow arrays as lookup value', () => {
+        const response = Model.find({
+          id: ['5', '12'],
+        }, 'comments');
+        expect(response).toMatchSnapshot();
+      });
+
+      test('should search for nested properties', () => {
+        const response = Model.find({
+          attributes: {
+            address: {
+              road: '123 Main St'
+            }
+          }
+        }, 'people');
+
+        expect(response).toMatchSnapshot();
+      });
     });
   });
-
-  describe('#findById', () => {
-    test('should find an entity in store by id', () => {
-      const response = Model.findById(5, 'comments');
-      expect(response.body).toEqual(apiState.comments[5].body);
-    });
-  });
-
-  describe('#findAll', () => {
-    test('should return all values from a resource store', () => {
-      const response = Model.findAll('comments');
-
-      expect(response).toMatchSnapshot();
-    });
-  });
-
-  describe('#find', () => {
-    test('should return an array of values matching a query', () => {
-      const response = Model.find({
-        attributes: {
-          body: 'First!',
-        },
-      }, 'comments');
-      expect(response).toMatchSnapshot();
-    });
 
     test('should allow arrays as lookup value', () => {
       const response = Model.find({
