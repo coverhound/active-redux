@@ -45,6 +45,14 @@ export default {
         road: '123 Main St'
       }
     },
+    relationships: {
+      comments: {
+        data: [
+          { type: 'comments', id: '5' },
+          { type: 'comments', id: '12' }
+        ]
+      }
+    },
     links: {
       self: 'http://example.com/people/9'
     }
@@ -56,7 +64,7 @@ export default {
     },
     relationships: {
       author: {
-        data: { type: 'people', id: '2' }
+        data: { type: 'people', id: '9' }
       }
     },
     links: {

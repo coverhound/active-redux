@@ -5,16 +5,16 @@ describe('Registry', () => {
     const store = 'store1';
 
     test('registers the class by its name', () => {
-      class Test {}
+      class Test { static type = 'test'; }
       Registry.register(Test);
-      expect(Registry.get('Test')).toBe(Test);
+      expect(Registry.get('test')).toBe(Test);
     });
 
     test('sets the store on the class\'s context', () => {
-      class Test2 {}
+      class Test2 { static type = 'test2'; }
       Registry.store = store;
       Registry.register(Test2);
-      expect(Registry.get('Test2').context.store).toEqual(store);
+      expect(Registry.get('test2').context.store).toEqual(store);
     });
   });
 
@@ -29,7 +29,7 @@ describe('Registry', () => {
     test('sets the store on registered models\' context', () => {
       Registry.store = store;
       expect(Registry.store).toEqual(store);
-      expect(Registry.get('Test').context.store).toEqual(store);
+      expect(Registry.get('test').context.store).toEqual(store);
     });
   });
 });

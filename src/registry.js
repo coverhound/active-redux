@@ -21,7 +21,7 @@ class Registry {
   register(model) {
     model.context = this.__context__;
     model.__defineMethods__ && model.__defineMethods__();
-    this.__models__[model.name] = model;
+    this.__models__[model.type] = model;
   }
 }
 

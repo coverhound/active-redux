@@ -5,5 +5,8 @@ module.exports = {
   },
   plugins: [
     'jest'
-  ]
+  ],
+  rules: {
+    'no-underscore-dangle': ['error', { allowAfterThis: true }]
+  }
 };

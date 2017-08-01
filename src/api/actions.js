@@ -31,7 +31,7 @@ export const remoteCreate = ({ resource, endpoint = resource.endpoint('create') 
   return wrappedApiRequest({
     resource,
     options: {
-      ...getState().remote.apiConfig,
+      ...getState().api.apiConfig,
       method: 'POST',
       data: { data: resource }
     },
@@ -50,7 +50,7 @@ export const remoteRead = ({ resource, endpoint = resource.endpoint('read') }) =
   return wrappedApiRequest({
     resource,
     options: {
-      ...getState().remote.apiConfig,
+      ...getState().api.apiConfig,
       method: 'GET',
       data: { data: resource }
     },
@@ -70,7 +70,7 @@ export const remoteUpdate = ({ resource, endpoint = resource.endpoint('update') 
     return wrappedApiRequest({
       resource,
       options: {
-        ...getState().remote.apiConfig,
+        ...getState().api.apiConfig,
         method: 'PATCH',
         data: { data: resource }
       },
@@ -88,7 +88,7 @@ const remoteDeleteFailed = createAction(ActionTypes.REMOTE_DELETE_FAILED);
 export const remoteDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
   (dispatch, getState) => {
     const options = {
-      ...getState().remote.apiConfig,
+      ...getState().api.apiConfig,
       method: 'DELETE',
     };
 

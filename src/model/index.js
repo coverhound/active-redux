@@ -11,8 +11,12 @@ class Model {
     delete: ':type/:id',
   };
 
-  static endpoint(action) {
-    return parseParams(this, this.endpoints[action]);
+  static endpoint(action, params = this) {
+    return parseParams(params, this.endpoints[action]);
+  }
+
+  endpoint(action) {
+    return this.constructor.endpoint(action, this);
   }
 
   constructor(data) {
@@ -49,8 +53,8 @@ class Model {
         const data = this.data.relationships[field].data;
 
         return relationship.array
-          ? this.constructor.find({ id: data.map((d) => d.id) }, data[0].type)
-          : this.constructor.findById(data.id, data.type);
+          ? this.constructor.where({ id: data.map((d) => d.id) }, { type: data[0].type })
+          : this.constructor.findById(data.id, { type: data.type });
       }
     });
   }

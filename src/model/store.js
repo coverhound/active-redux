@@ -1,5 +1,17 @@
-import { missingStore } from './errors';
-import { deepPartialEqual } from './helpers';
+import { missingStore, unregisteredModel } from './errors';
+import { queryData } from './helpers';
+import { remoteRead } from '../api';
+import Registry from '../registry';
+import BaseModel from './index';
+
+const initModel = (data) => {
+  let Model = Registry.get(data.type);
+  if (!Model) {
+    Model = BaseModel;
+    unregisteredModel(data.type);
+  }
+  return new Model(data);
+};
 
 export default (target) => (
   class Model extends target {
@@ -25,32 +37,37 @@ export default (target) => (
       return this.store.dispatch;
     }
 
-    static findById(id, type = this.type) {
-      return new this(this.state[type][id]);
-    }
-
-    static findAll(type = this.type) {
-      return Object.values(this.state[type]).map((data) => new this(data));
-    }
-
-    static find(query, type = this.type) {
-      return this.findAll(type).filter((entity) =>
-        Object.entries(query).reduce((match, [queryKey, queryValue]) => {
-          if (match === false) {
-            return match;
-          }
-
-          const entityValue = entity.data[queryKey];
-
-          if (Array.isArray(queryValue)) {
-            return queryValue.includes(entityValue);
-          }
-          if (typeof queryValue === 'object') {
-            return deepPartialEqual(queryValue, entityValue);
-          }
-          return queryValue === entityValue;
-        }, true)
+    static all({ type = this.type } = {}) {
+      return Promise.resolve(
+        Object.values(this.state[type]).map((data) => initModel(data))
       );
+    }
+
+    static where(query, { remote = true, type = this.type } = {}) {
+      const local = queryData(Object.values(this.state[type]), query);
+      if (local.length > 0 || remote === false) {
+        return Promise.resolve(local.map((data) => initModel(data)));
+      }
+
+      return this.dispatch(remoteRead({ resource: this, query }))
+        .then(() => this.where(query, { remote: false }));
+    }
+
+    static findById(id, { remote = true, type = this.type } = {}) {
+      const local = this.state[type][id];
+      if (local || remote === false) {
+        return Promise.resolve(initModel(local));
+      }
+
+      const endpoint = `${this.endpoint('read')}/${id}`;
+
+      return this.dispatch(remoteRead({ resource: this, endpoint }))
+        .then(() => this.findById(id, { remote: false }));
+    }
+
+    static find({ id, ...query }, { remote = true, type = this.type } = {}) {
+      if (id) return this.findById(id, { remote, type });
+      return this.where(query, { remote, type }).then((results) => results[0]);
     }
   }
 );

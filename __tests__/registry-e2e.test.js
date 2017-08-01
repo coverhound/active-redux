@@ -3,28 +3,32 @@ import Registry from 'active-redux/registry';
 import mockStore from 'fixtures/store';
 import jsonApiData from 'fixtures/json-api-body';
 
-const data = jsonApiData.data[0];
-const [_, ...comments] = jsonApiData.included;
+const [person, ...comments] = jsonApiData.included;
 
 describe('Registry Integration', () => {
   let subject;
 
   beforeAll(() => {
-    class Article extends Model {
+    class Person extends Model {
+      static type = 'people';
       static attributes = {
         comments: Attr.hasMany(),
       }
     }
+    class Comment extends Model {
+      static type = 'comments';
+    }
 
-    Registry.register(Article);
-    const RegisteredArticle = Registry.get('Article');
-    subject = new RegisteredArticle(data);
+    Registry.register(Person);
+    Registry.register(Comment);
+    subject = new Person(person);
   });
 
   describe('Querying the store', () => {
-    test('Registered model can query store', () => {
+    test('Registered model can query store', async () => {
       Registry.store = mockStore;
-      expect(subject.comments.length).toEqual(comments.length);
+      const subjectComments = await subject.comments;
+      expect(subjectComments.length).toEqual(comments.length);
     });
 
     test('should throw if store is not set', () => {
