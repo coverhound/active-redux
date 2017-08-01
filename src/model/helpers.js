@@ -1,4 +1,4 @@
-export const deepPartialEqual = (obj1, obj2) =>
+export const deepPartialEqual = (obj1, obj2) => (
   Object.entries(obj1).reduce((equal, [key, value]) => {
     if (equal === false) {
       return equal;
@@ -13,4 +13,10 @@ export const deepPartialEqual = (obj1, obj2) =>
     }
 
     return equal;
-  }, true);
+  }, true)
+);
+
+export const parseParams = (context, string) => {
+  const regexp = /:[^/.]+/g;
+  return string.replace(regexp, (match) => context[match.substring(1)]);
+};

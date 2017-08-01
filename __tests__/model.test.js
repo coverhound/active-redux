@@ -125,23 +125,38 @@ describe('Model', () => {
     });
   });
 
-    test('should allow arrays as lookup value', () => {
-      const response = Model.find({
-        id: ['5', '12'],
-      }, 'comments');
-      expect(response).toMatchSnapshot();
+  describe('endpoints', () => {
+    test('default to RESTful endpoints', () => {
+      class Article extends Model { static type = 'articles'; }
+      Article.__defineMethods__();
+      const subject = new Article({ id: 5 });
+
+      expect(subject.endpoint('create')).toEqual('articles');
+      expect(subject.endpoint('read')).toEqual('articles');
+      expect(subject.endpoint('update')).toEqual('articles/5');
+      expect(subject.endpoint('delete')).toEqual('articles/5');
     });
 
-    test('should search for nested properties', () => {
-      const response = Model.find({
-        attributes: {
-          address: {
-            road: '123 Main St'
-          }
-        }
-      }, 'people');
+    test('has overrideable defaults', () => {
+      class Article extends Model {
+        static type = 'articles';
+        static attributes = {
+          slug: Attr.string()
+        };
+        static endpoints = {
+          create: 'foo/:type',
+          read: 'bar/:type',
+          update: ':slug/:id',
+          delete: ':id/:slug',
+        };
+      }
+      Article.__defineMethods__();
+      const subject = new Article({ id: 5, attributes: { slug: 'nope-nope-nope' } });
 
-      expect(response).toMatchSnapshot();
+      expect(subject.endpoint('create')).toEqual('foo/articles');
+      expect(subject.endpoint('read')).toEqual('bar/articles');
+      expect(subject.endpoint('update')).toEqual('nope-nope-nope/5');
+      expect(subject.endpoint('delete')).toEqual('5/nope-nope-nope');
     });
   });
 });

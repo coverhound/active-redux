@@ -1,8 +1,20 @@
 import { invalidAttribute } from './errors';
+import { parseParams } from './helpers';
 import Store from './store';
 
 @Store
 class Model {
+  static endpoints = {
+    create: ':type',
+    read: ':type',
+    update: ':type/:id',
+    delete: ':type/:id',
+  };
+
+  static endpoint(action) {
+    return parseParams(this, this.endpoints[action]);
+  }
+
   constructor(data) {
     this.data = data;
   }
@@ -41,6 +53,10 @@ class Model {
           : this.constructor.findById(data.id, data.type);
       }
     });
+  }
+
+  get id() {
+    return this.data.id;
   }
 
   get type() {
