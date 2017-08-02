@@ -13,7 +13,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteClear() clears the resource 1`] = `
+exports[`reducer actions apiClear() clears the resource 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -26,7 +26,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteCreate() increments isCreating 1`] = `
+exports[`reducer actions apiCreate() increments isCreating 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 1,
@@ -37,7 +37,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteCreate() populates the state with resources 1`] = `
+exports[`reducer actions apiCreate() populates the state with resources 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -59,7 +59,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteDelete() increments isDeleting and marks the resource as pending 1`] = `
+exports[`reducer actions apiDelete() increments isDeleting and marks the resource as pending 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -84,7 +84,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteDelete() removes the resources from the store 1`] = `
+exports[`reducer actions apiDelete() removes the resources from the store 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -103,7 +103,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteHydrate() populates the state with resources 1`] = `
+exports[`reducer actions apiHydrate() populates the state with resources 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -125,7 +125,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteRead() increments isReading 1`] = `
+exports[`reducer actions apiRead() increments isReading 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -136,7 +136,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteRead() populates the state with resources 1`] = `
+exports[`reducer actions apiRead() populates the state with resources 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -158,7 +158,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteUpdate() increments isUpdating and marks the resource as pending 1`] = `
+exports[`reducer actions apiUpdate() increments isUpdating and marks the resource as pending 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,
@@ -183,7 +183,7 @@ Object {
 }
 `;
 
-exports[`reducer actions remoteUpdate() updates the state with resources 1`] = `
+exports[`reducer actions apiUpdate() updates the state with resources 1`] = `
 Object {
   "apiConfig": Object {},
   "isCreating": 0,

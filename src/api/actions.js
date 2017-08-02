@@ -20,14 +20,14 @@ const wrappedApiRequest = ({
 });
 
 export const apiConfigure = createAction(ActionTypes.API_CONFIGURE);
-export const remoteClear = createAction(ActionTypes.REMOTE_CLEAR);
-export const remoteHydrate = createAction(ActionTypes.REMOTE_HYDRATE);
+export const apiClear = createAction(ActionTypes.API_CLEAR);
+export const apiHydrate = createAction(ActionTypes.API_HYDRATE);
 
-const remoteWillCreate = createAction(ActionTypes.REMOTE_WILL_CREATE);
-const remoteCreateDone = createAction(ActionTypes.REMOTE_CREATE_DONE);
-const remoteCreateFailed = createAction(ActionTypes.REMOTE_CREATE_FAILED);
-export const remoteCreate = ({ resource, endpoint = resource.endpoint('create') }) => (dispatch, getState) => {
-  dispatch(remoteWillCreate(resource));
+const apiWillCreate = createAction(ActionTypes.API_WILL_CREATE);
+const apiCreateDone = createAction(ActionTypes.API_CREATE_DONE);
+const apiCreateFailed = createAction(ActionTypes.API_CREATE_FAILED);
+export const apiCreate = ({ resource, endpoint = resource.endpoint('create') }) => (dispatch, getState) => {
+  dispatch(apiWillCreate(resource));
   return wrappedApiRequest({
     resource,
     options: {
@@ -37,16 +37,16 @@ export const remoteCreate = ({ resource, endpoint = resource.endpoint('create') 
     },
     endpoint,
     dispatch,
-    success: remoteCreateDone,
-    failure: remoteCreateFailed,
+    success: apiCreateDone,
+    failure: apiCreateFailed,
   });
 };
 
-const remoteWillRead = createAction(ActionTypes.REMOTE_WILL_READ);
-const remoteReadDone = createAction(ActionTypes.REMOTE_READ_DONE);
-const remoteReadFailed = createAction(ActionTypes.REMOTE_READ_FAILED);
-export const remoteRead = ({ resource, endpoint = resource.endpoint('read') }) => (dispatch, getState) => {
-  dispatch(remoteWillRead(resource));
+const apiWillRead = createAction(ActionTypes.API_WILL_READ);
+const apiReadDone = createAction(ActionTypes.API_READ_DONE);
+const apiReadFailed = createAction(ActionTypes.API_READ_FAILED);
+export const apiRead = ({ resource, endpoint = resource.endpoint('read') }) => (dispatch, getState) => {
+  dispatch(apiWillRead(resource));
   return wrappedApiRequest({
     resource,
     options: {
@@ -56,17 +56,17 @@ export const remoteRead = ({ resource, endpoint = resource.endpoint('read') }) =
     },
     endpoint,
     dispatch,
-    success: remoteReadDone,
-    failure: remoteReadFailed,
+    success: apiReadDone,
+    failure: apiReadFailed,
   });
 };
 
-const remoteWillUpdate = createAction(ActionTypes.REMOTE_WILL_UPDATE);
-const remoteUpdateDone = createAction(ActionTypes.REMOTE_UPDATE_DONE);
-const remoteUpdateFailed = createAction(ActionTypes.REMOTE_UPDATE_FAILED);
-export const remoteUpdate = ({ resource, endpoint = resource.endpoint('update') }) => (
+const apiWillUpdate = createAction(ActionTypes.API_WILL_UPDATE);
+const apiUpdateDone = createAction(ActionTypes.API_UPDATE_DONE);
+const apiUpdateFailed = createAction(ActionTypes.API_UPDATE_FAILED);
+export const apiUpdate = ({ resource, endpoint = resource.endpoint('update') }) => (
   (dispatch, getState) => {
-    dispatch(remoteWillUpdate(resource));
+    dispatch(apiWillUpdate(resource));
     return wrappedApiRequest({
       resource,
       options: {
@@ -76,31 +76,31 @@ export const remoteUpdate = ({ resource, endpoint = resource.endpoint('update') 
       },
       endpoint,
       dispatch,
-      success: remoteUpdateDone,
-      failure: remoteUpdateFailed,
+      success: apiUpdateDone,
+      failure: apiUpdateFailed,
     });
   }
 );
 
-const remoteWillDelete = createAction(ActionTypes.REMOTE_WILL_DELETE);
-const remoteDeleteDone = createAction(ActionTypes.REMOTE_DELETE_DONE);
-const remoteDeleteFailed = createAction(ActionTypes.REMOTE_DELETE_FAILED);
-export const remoteDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
+const apiWillDelete = createAction(ActionTypes.API_WILL_DELETE);
+const apiDeleteDone = createAction(ActionTypes.API_DELETE_DONE);
+const apiDeleteFailed = createAction(ActionTypes.API_DELETE_FAILED);
+export const apiDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
   (dispatch, getState) => {
     const options = {
       ...getState().api.apiConfig,
       method: 'DELETE',
     };
 
-    dispatch(remoteWillDelete(resource));
+    dispatch(apiWillDelete(resource));
     return apiClient(endpoint, options).then((json) => {
-      dispatch(remoteDeleteDone(resource));
+      dispatch(apiDeleteDone(resource));
       return Promise.resolve(json);
     }).catch((error) => {
       const err = error;
       err.resource = resource;
 
-      dispatch(remoteDeleteFailed(err));
+      dispatch(apiDeleteFailed(err));
       return Promise.reject(err);
     });
   }
