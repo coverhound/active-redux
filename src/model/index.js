@@ -11,6 +11,8 @@ class Model {
     delete: ':type/:id',
   };
 
+  static relationships = {};
+
   static endpoint(action, params = this) {
     return parseParams(params, this.endpoints[action]);
   }
@@ -31,6 +33,7 @@ class Model {
           break;
         case 'relationship':
           this.__defineRelationship__(field, attribute);
+          this.relationships[attribute.resource || field] = { key: field, ...attribute };
           break;
         default:
           throw invalidAttribute(field);

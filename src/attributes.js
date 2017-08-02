@@ -1,14 +1,16 @@
 // we can remove the yup dependency, in all likelyhood
 import yup from 'yup';
 
-export const hasOne = () => ({
+export const hasOne = (resource) => ({
   type: 'relationship',
   array: false,
+  resource,
 });
 
-export const hasMany = () => ({
+export const hasMany = (resource) => ({
   type: 'relationship',
   array: true,
+  resource,
 });
 
 export const string = ({ default: defaultValue } = {}) => ({

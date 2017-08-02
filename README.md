@@ -39,7 +39,7 @@ import { Registry, Model, Attr } from 'active-redux';
 
 class Person extends Model {
   static type = 'people'; // corresponds to JSON-API type
-  static api = {          // overridable API endpoints - defaults to type
+  static endpoints = {    // overridable API endpoints - defaults to type
     create: 'people',
     read: 'people',
     update: 'people/:id',
@@ -47,7 +47,8 @@ class Person extends Model {
   };
   static attributes = {
     name: Attr.string({ default: 'Joe Schmoe '}),
-    posts: Attr.hasMany('Post'), // The model this corresponds to
+    posts: Attr.hasMany('articles'), // The JSON-API type of the relation
+    employer: Attr.hasOne('companies'),
   };
 
   get firstName() {
@@ -55,7 +56,7 @@ class Person extends Model {
   }                                // defined when the model is registered
 }
 
-Registry.register(Person);
+Registry.register(Person); // Important so that we can de-serialize records
 ```
 
 Models need to be registered to call hooks like defining attribute methods and
@@ -65,11 +66,13 @@ setting the store.
 
 ```js
 // wherever the store is set
-import { createStore } from 'redux';
-import { Registry, reducers } from 'active-redux';
-import myReducer from 'app/reducers';
+import { createStore, combineReducers } from 'redux';
+import { Registry, reducer: api } from 'active-redux';
+import reducers from 'app/reducers';
 
-const store = createStore(myReducer, ...reducers);
+const store = createStore(
+  combineReducers({ api, ...reducers }),
+);
 Registry.store = store;
 ```
 
@@ -79,9 +82,7 @@ This gives models access to the store for querying.
 #### Use the Model
 ```
 // anywhere
-import { Registry } from 'active-redux';
-
-const Person = Registry.get('Person');
+import Person from 'models/person';
 const joe = Person.find(5)
 // => <Person>
 ```
