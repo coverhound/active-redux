@@ -26,12 +26,12 @@ export const remoteHydrate = createAction(ActionTypes.REMOTE_HYDRATE);
 const remoteWillCreate = createAction(ActionTypes.REMOTE_WILL_CREATE);
 const remoteCreateDone = createAction(ActionTypes.REMOTE_CREATE_DONE);
 const remoteCreateFailed = createAction(ActionTypes.REMOTE_CREATE_FAILED);
-export const remoteCreate = ({ resource, endpoint = resource.type }) => (dispatch, getState) => {
+export const remoteCreate = ({ resource, endpoint = resource.endpoint('create') }) => (dispatch, getState) => {
   dispatch(remoteWillCreate(resource));
   return wrappedApiRequest({
     resource,
     options: {
-      ...getState().remote.apiConfig,
+      ...getState().api.apiConfig,
       method: 'POST',
       data: { data: resource }
     },
@@ -45,12 +45,12 @@ export const remoteCreate = ({ resource, endpoint = resource.type }) => (dispatc
 const remoteWillRead = createAction(ActionTypes.REMOTE_WILL_READ);
 const remoteReadDone = createAction(ActionTypes.REMOTE_READ_DONE);
 const remoteReadFailed = createAction(ActionTypes.REMOTE_READ_FAILED);
-export const remoteRead = ({ resource, endpoint = resource.type }) => (dispatch, getState) => {
+export const remoteRead = ({ resource, endpoint = resource.endpoint('read') }) => (dispatch, getState) => {
   dispatch(remoteWillRead(resource));
   return wrappedApiRequest({
     resource,
     options: {
-      ...getState().remote.apiConfig,
+      ...getState().api.apiConfig,
       method: 'GET',
       data: { data: resource }
     },
@@ -64,13 +64,13 @@ export const remoteRead = ({ resource, endpoint = resource.type }) => (dispatch,
 const remoteWillUpdate = createAction(ActionTypes.REMOTE_WILL_UPDATE);
 const remoteUpdateDone = createAction(ActionTypes.REMOTE_UPDATE_DONE);
 const remoteUpdateFailed = createAction(ActionTypes.REMOTE_UPDATE_FAILED);
-export const remoteUpdate = ({ resource, endpoint = `${resource.type}${resource.id}` }) => (
+export const remoteUpdate = ({ resource, endpoint = resource.endpoint('update') }) => (
   (dispatch, getState) => {
     dispatch(remoteWillUpdate(resource));
     return wrappedApiRequest({
       resource,
       options: {
-        ...getState().remote.apiConfig,
+        ...getState().api.apiConfig,
         method: 'PATCH',
         data: { data: resource }
       },
@@ -85,10 +85,10 @@ export const remoteUpdate = ({ resource, endpoint = `${resource.type}${resource.
 const remoteWillDelete = createAction(ActionTypes.REMOTE_WILL_DELETE);
 const remoteDeleteDone = createAction(ActionTypes.REMOTE_DELETE_DONE);
 const remoteDeleteFailed = createAction(ActionTypes.REMOTE_DELETE_FAILED);
-export const remoteDelete = ({ resource, endpoint = `${resource.type}${resource.id}` }) => (
+export const remoteDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
   (dispatch, getState) => {
     const options = {
-      ...getState().remote.apiConfig,
+      ...getState().api.apiConfig,
       method: 'DELETE',
     };
 

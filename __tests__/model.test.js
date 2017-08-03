@@ -1,12 +1,12 @@
-import { Attr, Model } from '../src';
-import jsonApiData from '../fixtures/json-api-body';
-import mockStore from '../fixtures/store';
+import { Attr, Model, Registry } from '../src';
+import jsonApiData from 'fixtures/json-api-body';
+import mockStore from 'fixtures/store';
 
-const data = jsonApiData.data[0];
-const [author, ...comments] = jsonApiData.included;
+const article = jsonApiData.data[0];
+const [person, ...comments] = jsonApiData.included;
 
 describe('Model', () => {
-  let apiState = mockStore.getState().api;
+  const apiState = mockStore.getState().api;
 
   beforeEach(() => {
     Model.store = mockStore;
@@ -19,50 +19,52 @@ describe('Model', () => {
           title: Attr.string()
         };
       }
-      expect(new Article(data).title).toEqual(undefined);
-      Article.__defineMethods__();
-      expect(new Article(data).title).toEqual(data.attributes.title);
+      expect(new Article(article).title).toEqual(undefined);
+      Registry.register(Article);
+      expect(new Article(article).title).toEqual(article.attributes.title);
     });
 
-    test('defines hasOne methods', () => {
-      class Article extends Model {
+    test('defines hasOne methods', async () => {
+      class Comment extends Model {
+        static type = 'comments';
         static attributes = {
           author: Attr.hasOne(),
         };
       }
 
-      expect(new Article(data).author).toBeUndefined();
-      Article.__defineMethods__();
-      const article = new Article(data);
-      expect(article.author).toBeDefined();
-      expect(typeof article.author).toEqual('object');
+      expect(new Comment(comments[0]).author).toBeUndefined();
+
+      Registry.register(Comment);
+
+      const comment = new Comment(comments[0]);
+      expect(await comment.author).toMatchSnapshot();
     });
 
-      test('defines hasMany methods', () => {
-        class Article extends Model {
-          static attributes = {
-            comments: Attr.hasMany(),
+    test('defines hasMany methods', async () => {
+      class Person extends Model {
+        static type = 'people';
+        static attributes = {
+          comments: Attr.hasMany(),
+        }
+      }
+
+      expect(new Person(person).comments).toBeUndefined();
+      Registry.register(Person);
+      const subject = new Person(person);
+      expect(await subject.comments).toMatchSnapshot();
+    });
+
+    test('should throw if attribute is invalid', () => {
+      class Article extends Model {
+        static attributes = {
+          comments: {
+            invalid: 'attribute',
           }
         }
+      }
 
-        expect(new Article(data).comments).toBeUndefined();
-        Article.__defineMethods__();
-        const article = new Article(data);
-        expect(article.comments).toBeDefined();
-        expect(article.comments).toHaveProperty('length');
-      });
-
-      test('should throw if attribute is invalid', () => {
-        class Article extends Model {
-          static attributes = {
-            comments: {
-              invalid: 'attribute',
-            }
-          }
-        }
-
-        expect(Article.__defineMethods__.bind(Article)).toThrow('comments needs an attribute type');
-      });
+      expect(Article.__defineMethods__.bind(Article)).toThrow('comments needs an attribute type');
+    });
   });
 
   describe('#type', () => {
@@ -72,54 +74,86 @@ describe('Model', () => {
     });
   });
 
-  describe('#dispatch', () => {
-    test('provides a getter for store dispatch', () => {
-      expect(Model.dispatch).toBeInstanceOf(Function);
+  describe('Store', () => {
+    class Comment extends Model { static type = 'comments'; }
+    Registry.register(Comment);
+    class Person extends Model { static type = 'people'; }
+    Registry.register(Person);
+    Registry.store = mockStore;
+
+    describe('#dispatch', () => {
+      test('provides a getter for store dispatch', () => {
+        expect(Model.dispatch).toBeInstanceOf(Function);
+      });
+    });
+
+    describe('#all', () => {
+      test('should return all values from a resource store', async () => {
+        const response = await Comment.all();
+
+        expect(response).toMatchSnapshot();
+      });
+    });
+
+    describe('#findById', () => {
+      test('should find an entity in store by id', async () => {
+        const response = await Comment.findById(5);
+        expect(response.body).toEqual(apiState.comments[5].body);
+      });
+    });
+
+    describe('#where', () => {
+      test('should return an array of values matching a query', async () => {
+        const response = await Comment.where({ attributes: { body: 'First!' } });
+        expect(response).toMatchSnapshot();
+      });
+
+      test('should allow arrays as lookup value', async () => {
+        const response = await Comment.where({ id: ['5', '12'] });
+        expect(response).toMatchSnapshot();
+      });
+
+      test('should search for nested properties', async () => {
+        const response = await Person.where({ attributes: {
+          address: { road: '123 Main St' }
+        } });
+        expect(response).toMatchSnapshot();
+      });
     });
   });
 
-  describe('#findById', () => {
-    test('should find an entity in store by id', () => {
-      const response = Model.findById(5, 'comments');
-      expect(response.body).toEqual(apiState.comments[5].body);
-    });
-  });
+  describe('endpoints', () => {
+    test('default to RESTful endpoints', () => {
+      class Article extends Model { static type = 'articles'; }
+      Article.__defineMethods__();
+      const subject = new Article({ id: 5 });
 
-  describe('#findAll', () => {
-    test('should return all values from a resource store', () => {
-      const response = Model.findAll('comments');
-
-      expect(response).toMatchSnapshot();
-    });
-  });
-
-  describe('#find', () => {
-    test('should return an array of values matching a query', () => {
-      const response = Model.find({
-        attributes: {
-          body: 'First!',
-        },
-      }, 'comments');
-      expect(response).toMatchSnapshot();
+      expect(subject.endpoint('create')).toEqual('articles');
+      expect(subject.endpoint('read')).toEqual('articles');
+      expect(subject.endpoint('update')).toEqual('articles/5');
+      expect(subject.endpoint('delete')).toEqual('articles/5');
     });
 
-    test('should allow arrays as lookup value', () => {
-      const response = Model.find({
-        id: ['5', '12'],
-      }, 'comments');
-      expect(response).toMatchSnapshot();
-    });
+    test('has overrideable defaults', () => {
+      class Article extends Model {
+        static type = 'articles';
+        static attributes = {
+          slug: Attr.string()
+        };
+        static endpoints = {
+          create: 'foo/:type',
+          read: 'bar/:type',
+          update: ':slug/:id',
+          delete: ':id/:slug',
+        };
+      }
+      Article.__defineMethods__();
+      const subject = new Article({ id: 5, attributes: { slug: 'nope-nope-nope' } });
 
-    test('should search for nested properties', () => {
-      const response = Model.find({
-        attributes: {
-          address: {
-            road: '123 Main St'
-          }
-        }
-      }, 'people');
-
-      expect(response).toMatchSnapshot();
+      expect(subject.endpoint('create')).toEqual('foo/articles');
+      expect(subject.endpoint('read')).toEqual('bar/articles');
+      expect(subject.endpoint('update')).toEqual('nope-nope-nope/5');
+      expect(subject.endpoint('delete')).toEqual('5/nope-nope-nope');
     });
   });
 });

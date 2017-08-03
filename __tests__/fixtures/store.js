@@ -1,8 +1,10 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import reducer from '../../src/api/reducer';
 
 const initialState = {
   api: {
+    apiConfig: {},
     people: {
       9: {
         type: 'people',
@@ -13,6 +15,14 @@ const initialState = {
           twitter: 'dgeb',
           address: {
             road: '123 Main St'
+          }
+        },
+        relationships: {
+          comments: {
+            data: [
+              { type: 'comments', id: '5' },
+              { type: 'comments', id: '12' }
+            ]
           }
         },
         links: {
@@ -44,7 +54,7 @@ const initialState = {
         },
         relationships: {
           author: {
-            data: { type: 'people', id: '2' }
+            data: { type: 'people', id: '9' }
           }
         },
         links: {
@@ -70,4 +80,8 @@ const initialState = {
   }
 };
 
-export default createStore(reducer, initialState);
+export default createStore(
+  reducer,
+  initialState,
+  applyMiddleware(thunk),
+);
