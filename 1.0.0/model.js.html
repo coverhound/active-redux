@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>model.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="define-Model.html">Model</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="define-Model.html#.all">all</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="define-Model.html#.find">find</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="define-Model.html#.where">where</a></span></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-active-redux.html">active-redux</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiClear">apiClear</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiConfigure">apiConfigure</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiCreate">apiCreate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiDelete">apiDelete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiHydrate">apiHydrate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiRead">apiRead</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiUpdate">apiUpdate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.bind">bind</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.define">define</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-active-redux_attributes.html">active-redux/attributes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.array">array</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.boolean">boolean</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.date">date</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.hasMany">hasMany</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.hasOne">hasOne</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.number">number</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.object">object</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.string">string</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">model.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Store from './store';
+import Registry from './registry';
+
+/**
+ * @ignore
+ */
+const invalidAttribute = (field) => (
+  new Error(`${field} needs an attribute type`)
+);
+
+/**
+ * @ignore
+ */
+const defineAttribute = (object, field, attribute) => {
+  Object.defineProperty(object, field, {
+    get() {
+      return attribute.cast(this.data.attributes[field]);
+    }
+  });
+};
+
+/**
+ * @ignore
+ */
+const defineRelationship = (object, field) => {
+  Object.defineProperty(object, field, {
+    get() {
+      const { isArray, resource } = this.constructor.attributes[field];
+      const model = Registry.get(resource);
+      if (!model) {
+        throw new Error(`Unregistered model: ${resource}`);
+      }
+      const data = this.data.relationships[field].data;
+
+      return isArray
+        ? Store.where({ id: data.map((d) => d.id) }, { model })
+        : Store.find({ id: data.id }, { model });
+    }
+  });
+};
+
+/**
+ * Define JSON-API attributes and relationships
+ * @ignore
+ */
+const defineMethods = (object, attributes) => {
+  const relationships = {};
+
+  Object.entries(attributes).forEach(([field, attribute]) => {
+    switch (attribute.type) {
+      case 'attribute':
+        defineAttribute(object.prototype, field, attribute);
+        break;
+      case 'relationship':
+        defineRelationship(object.prototype, field);
+        relationships[attribute.resource] = { key: field, ...attribute };
+        break;
+      default:
+        throw invalidAttribute(field);
+    }
+  });
+
+  return relationships;
+};
+
+/**
+ * @ignore
+ */
+const copyClassName = (from, to) => {
+  Object.defineProperty(to, 'name', {
+    value: from.name,
+    writable: false,
+    enumerable: false,
+    configurable: false,
+  });
+};
+
+/**
+ * Helper function to create endpoint URIs
+ * @ignore
+ * @example
+ * const obj = { type: 'animal', id: 5 }
+ * parseParams(obj, '/api/v1/:type/:id')
+ * // => '/api/v1/animal/5'
+ */
+export const parseParams = (context, string) => {
+  const regexp = /:[^/.]+/g;
+  return string.replace(regexp, (match) => context[match.substring(1)]);
+};
+
+/**
+  * Defines a model
+  * @alias module:active-redux.define
+  * @example
+  * const Person = ActiveRedux.define('people', class Person {});
+  * @param {string} type - JSON-API type for the model
+  * @param {Class} [model] - Class to extend
+  * @return {Model}
+  */
+export default function define(type, model = class {}) {
+  /**
+   */
+  const Model = class extends model {
+
+    /**
+    * JSON-API type of the model
+    */
+    static type = type;
+
+    /**
+    * Attributes of a model, for which methods will be defined
+    * @example
+    * import Model, { Attr } from 'active-redux';
+    *
+    * const Person = Model.define('people', class Person {
+    *   static attributes = {
+    *     name: Attr.string(),
+    *   }
+    * });
+    *
+    * const joe = new Person({ attributes: { name: "Joe" } });
+    * joe.name // => "Joe"
+    */
+    static attributes = model.attributes || {};
+
+    /**
+    * Endpoints that will be queried. Can be overwritten.
+    */
+    static endpoints = model.endpoints || {
+      create: ':type',
+      read: ':type',
+      update: ':type/:id',
+      delete: ':type/:id',
+    };
+
+    /**
+    * @ignore
+    */
+    static relationships = {};
+
+    /**
+    * @ignore
+    */
+    static store = Store;
+
+    /**
+    * Gets all of that resource
+    * @example
+    * Person.all()
+    * // => Promise&lt;Array&lt;Person>>
+    * @return {Promise&lt;Array&lt;this>>} Array of model instances
+    */
+    static all() {
+      return this.store.all({ model: this });
+    }
+
+    /**
+    * Queries the store for that resource
+    * @example
+    * Person.where({ name: "Joe" })
+    * // => Promise&lt;Array&lt;Person>>
+    * @param {Object} query - Query for the store
+    * @param {Object} [options]
+    * @param {boolean} [options.remote] - Call to API if no records found?
+    * @return {Promise&lt;Array&lt;this>>} Array of model instances
+    */
+    static where(query = {}, options = {}) {
+      return this.store.where(query, { model: this, ...options });
+    }
+
+    /**
+    * Gets one of that resource
+    * @example
+    * Person.find({ id: 5 })
+    * // => Promise&lt;Person>
+    * @param {Object} query - Query for the store
+    * @param {Object} [options]
+    * @param {boolean} [options.remote] - Call to API if no records found?
+    * @return {Promise&lt;(this|null)>} A model instance
+    */
+    static find(query = {}, options = {}) {
+      return this.store.find(query, { model: this, ...options });
+    }
+
+    /**
+    * Find the endpoint for a specific action
+    * @ignore
+    */
+    static endpoint(action, params = this) {
+      return parseParams(params, this.endpoints[action]);
+    }
+
+    /**
+    * @ignore
+    * @see Model.endpoint
+    */
+    endpoint(action) {
+      return this.constructor.endpoint(action, this);
+    }
+
+    constructor(data) {
+      super();
+      this.data = data;
+    }
+
+    /**
+     * @return {string} JSON-API Resource ID
+     */
+    get id() {
+      return this.data.id;
+    }
+
+    /**
+     * @return {string} JSON-API Resource Type
+     */
+    get type() {
+      return this.constructor.type;
+    }
+  };
+
+  copyClassName(model, Model);
+  Model.relationships = defineMethods(Model, Model.attributes);
+  Registry.register(Model);
+  return Model;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a> on Fri Aug 04 2017 20:43:50 GMT-0700 (PDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

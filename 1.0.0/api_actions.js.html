@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>api/actions.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="define-Model.html">Model</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="define-Model.html#.all">all</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="define-Model.html#.find">find</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="define-Model.html#.where">where</a></span></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-active-redux.html">active-redux</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiClear">apiClear</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiConfigure">apiConfigure</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiCreate">apiCreate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiDelete">apiDelete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiHydrate">apiHydrate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiRead">apiRead</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.apiUpdate">apiUpdate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.bind">bind</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux.html#.define">define</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-active-redux_attributes.html">active-redux/attributes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.array">array</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.boolean">boolean</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.date">date</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.hasMany">hasMany</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.hasOne">hasOne</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.number">number</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.object">object</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-active-redux_attributes.html#.string">string</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">api/actions.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as ActionTypes from './constants';
+import { createAction, apiClient } from './utils';
+
+const wrappedApiRequest = ({
+  resource,
+  options,
+  endpoint,
+  dispatch,
+  success,
+  failure,
+}) => apiClient(endpoint, options).then((json) => {
+  dispatch(success(json));
+  return Promise.resolve(json);
+}).catch((error) => {
+  const err = error;
+  err.resource = resource;
+
+  dispatch(failure(err));
+  return Promise.reject(err);
+});
+
+/**
+ * Configure the API -
+ * see https://github.com/mzabriskie/axios#request-config
+ * @function
+ * @param {Object} config - Axios configuration
+ * @alias module:active-redux.apiConfigure
+ */
+export const apiConfigure = createAction(ActionTypes.API_CONFIGURE);
+
+/**
+ * Clear an entity from the store
+ * @function
+ * @example
+ * import { apiClear } from 'active-redux';
+ *
+ * state.api.people
+ * // => Object&lt;String: Person>
+ *
+ * dispatch(apiClear('people'))
+ *
+ * state.api.people
+ * // => {}
+ * @param {Object} data - JSON-API data
+ * @alias module:active-redux.apiClear
+ */
+export const apiClear = createAction(ActionTypes.API_CLEAR);
+
+/**
+ * Hydrate the store from JSON-API data
+ * @function
+ * @example
+ * import { apiHydrate } from 'active-redux';
+ *
+ * // This can also be an array of JSON-API data objects
+ * const jsonApiData = {
+ *   "type": "people",
+ *   "id": "5",
+ *   "attributes": {
+ *     "name": "Jimmy"
+ *   }
+ * };
+ *
+ * dispatch(apiHydrate(jsonApiData))
+ * @param {Object} data - JSON-API data
+ * @alias module:active-redux.apiHydrate
+ */
+export const apiHydrate = createAction(ActionTypes.API_HYDRATE);
+
+const apiWillCreate = createAction(ActionTypes.API_WILL_CREATE);
+const apiCreateDone = createAction(ActionTypes.API_CREATE_DONE);
+const apiCreateFailed = createAction(ActionTypes.API_CREATE_FAILED);
+
+/**
+ * Create a resource via API
+ * @function
+ * @example
+ * import { apiCreate } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise&lt;null>
+ *
+ * const person = new Person({ attributes: { name: 'Joe' } });
+ *
+ * dispatch(apiCreate({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise&lt;Person>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ * @alias module:active-redux.apiCreate
+ */
+export const apiCreate = ({ resource, endpoint = resource.endpoint('create') }) => (dispatch, getState) => {
+  dispatch(apiWillCreate(resource));
+  return wrappedApiRequest({
+    resource,
+    options: {
+      ...getState().api.apiConfig,
+      method: 'POST',
+      data: { data: resource }
+    },
+    endpoint,
+    dispatch,
+    success: apiCreateDone,
+    failure: apiCreateFailed,
+  });
+};
+
+const apiWillRead = createAction(ActionTypes.API_WILL_READ);
+const apiReadDone = createAction(ActionTypes.API_READ_DONE);
+const apiReadFailed = createAction(ActionTypes.API_READ_FAILED);
+
+/**
+ * Read a resource via API
+ * @function
+ * @example
+ * import { apiRead } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.all();
+ * // => Promise&lt;[]>
+ *
+ * dispatch(apiRead({ resource: Person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.all();
+ * // => Promise&lt;Array&lt;Person>>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ * @alias module:active-redux.apiRead
+ */
+export const apiRead = ({ resource, endpoint = resource.endpoint('read') }) => (dispatch, getState) => {
+  dispatch(apiWillRead(resource));
+  return wrappedApiRequest({
+    resource,
+    options: {
+      ...getState().api.apiConfig,
+      method: 'GET',
+      data: { data: resource }
+    },
+    endpoint,
+    dispatch,
+    success: apiReadDone,
+    failure: apiReadFailed,
+  });
+};
+
+const apiWillUpdate = createAction(ActionTypes.API_WILL_UPDATE);
+const apiUpdateDone = createAction(ActionTypes.API_UPDATE_DONE);
+const apiUpdateFailed = createAction(ActionTypes.API_UPDATE_FAILED);
+
+/**
+ * Update a resource via API
+ * @function
+ * @example
+ * import { apiUpdate } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise&lt;Person(id='5' name='Joe')>
+ *
+ * const person = new Person({ id: '5', attributes: { name: 'Jimmy' } });
+ *
+ * dispatch(apiUpdate({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise&lt;Person(id='5' name='Jimmy')>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ * @alias module:active-redux.apiUpdate
+ */
+export const apiUpdate = ({ resource, endpoint = resource.endpoint('update') }) => (
+  (dispatch, getState) => {
+    dispatch(apiWillUpdate(resource));
+    return wrappedApiRequest({
+      resource,
+      options: {
+        ...getState().api.apiConfig,
+        method: 'PATCH',
+        data: { data: resource }
+      },
+      endpoint,
+      dispatch,
+      success: apiUpdateDone,
+      failure: apiUpdateFailed,
+    });
+  }
+);
+
+const apiWillDelete = createAction(ActionTypes.API_WILL_DELETE);
+const apiDeleteDone = createAction(ActionTypes.API_DELETE_DONE);
+const apiDeleteFailed = createAction(ActionTypes.API_DELETE_FAILED);
+
+/**
+ * Delete a resource via API
+ * @function
+ * @example
+ * import { apiDelete } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise&lt;Person(id='5')>
+ *
+ * const person = new Person({ id: '5' });
+ *
+ * dispatch(apiDelete({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise&lt;null>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ * @alias module:active-redux.apiDelete
+ */
+export const apiDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
+  (dispatch, getState) => {
+    const options = {
+      ...getState().api.apiConfig,
+      method: 'DELETE',
+    };
+
+    dispatch(apiWillDelete(resource));
+    return apiClient(endpoint, options).then((json) => {
+      dispatch(apiDeleteDone(resource));
+      return Promise.resolve(json);
+    }).catch((error) => {
+      const err = error;
+      err.resource = resource;
+
+      dispatch(apiDeleteFailed(err));
+      return Promise.reject(err);
+    });
+  }
+);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a> on Fri Aug 04 2017 20:43:50 GMT-0700 (PDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
