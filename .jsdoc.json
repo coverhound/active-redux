@@ -1,0 +1,10 @@
+{
+  "source": {
+    "include": ["./src", "package.json", "README.md"]
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "docs",
+    "template": "node_modules/minami"
+  }
+}

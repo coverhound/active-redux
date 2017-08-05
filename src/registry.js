@@ -1,27 +1,18 @@
-import 'babel-polyfill';
-
+/**
+ * The registry hangs onto our models for lookup by type
+ * @private
+ */
 class Registry {
   constructor() {
-    this.__models__ = {};
-    this.__context__ = {};
-  }
-
-  get store() {
-    return this.__context__.store;
-  }
-
-  set store(store) {
-    this.__context__.store = store;
+    this.models = {};
   }
 
   get(name) {
-    return this.__models__[name];
+    return this.models[name];
   }
 
   register(model) {
-    model.context = this.__context__;
-    model.__defineMethods__ && model.__defineMethods__();
-    this.__models__[model.type] = model;
+    this.models[model.type] = model;
   }
 }
 

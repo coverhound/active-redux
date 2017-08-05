@@ -1,15 +1,15 @@
 language: node_js
-
 node_js:
-  - "7"
-
+- '7'
 sudo: false
-
 cache:
   yarn: true
   directories:
-    - ".eslintcache"
-    - "node_modules"
-
+  - ".eslintcache"
+  - node_modules
 script:
-  - yarn run test:ci
+- yarn run test:ci
+after_success: ./docs.sh
+env:
+  global:
+    secure: 0PrqfeItPhnO2OhiLAxB+BEgqiR7shvRtulZbXZ1bDEmujk09UVvDeNIzqHO1qT5X0pIdLDiXgXE+2h6105hTqeQlQxKHdVKd5XvjRXhHEN3KwyCs8UnWoSf0Z7i7/Tn32O+YnkCsWhYCFnQ6vrk9j3b8T8K30AiCG5mVBwoyajpa+nOCkwBpe9/EwbI8AGjraVX08OX5lovKLqkoTkSoQ/I1+Bh4yDCfkm1MUVq3aOuTGisAEnPawGR+W4QElHEO8K5ONAP5dts5F129IiNFwLUv+jvSi3hlvtzoO+e6dEzZrtNznFlQSaAWen71n8Oz0vyGAgcPGo1GesAoTTixvp6gh5joYWJ38hoo9biH93O8eErMrQrWX+lWqv6QzaJu/CqI6afn4mmY12PZwaA3x1u6sLF6cB0OlAHDof0Uxf/ORZfX4OCkAyWddPRJu+irMrtLUk8J5p3zr8hnDuUjP6SRfK/9lz+eceznkN+RadDt/PeQUGyLaLth38NxnRMBePnzey1LXcVQh6BMYvP5P5oNq8777CQCMxfR+46C2Xnv148kRSOh2P01DndRLd/9oApX+9/B0GJjG3FkNwoafcTFmqOzK7uVoPdZgMe0u+Vx+B+UtfNVfAML7BsZZCsCNFI5TlExWq0rQ6Z4wISL85Q8UL8iM/ivgrCmjpV+YQ=

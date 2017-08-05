@@ -24,6 +24,10 @@ const updateResources = (state, resources) => (
   imm.set(state, 'resources', mergeResources(state.resources, resources))
 );
 
+/**
+ * API Reducer
+ * @alias module:active-redux/api.reducer
+ */
 export default createReducer({
   [Types.API_CONFIGURE]: (state, { payload: apiConfig }) => (
     imm(state).set('apiConfig', apiConfig).value()

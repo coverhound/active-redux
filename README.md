@@ -1,5 +1,7 @@
 # Active Redux
 
+## [Documentation](https://coverhound.github.io/active-redux/1.0.0)
+
 The goal of this project is to stop bikeshedding API interactions on the
 frontend. We want an Active Record for Redux that works nicely with other
 reducers and doesn't require its own store.
@@ -17,12 +19,6 @@ with other objects, can house resource-specific information (how to read a date,
 how to put `firstName` and `lastName` together) and are able to persist
 themselves.
 
-#### Resources can be local or remote
-
-We should be able to have local and remote resources. Sometimes we want to be
-able to interact with resources locally for an extended period of time before
-persisting them via an API.
-
 ## Models
 
 Models are an object that read from a JSON-API resource. They define their own
@@ -31,14 +27,13 @@ attributes, know their relationships and can both read and persist information.
 Here's how you use models:
 
 
-#### 1. Define and register the model
+#### 1. Define the model
 
 ```js
 // models/person.js
-import { Registry, Model, Attr } from 'active-redux';
+import AR, { Attr } from 'active-redux';
 
-class Person extends Model {
-  static type = 'people'; // corresponds to JSON-API type
+const Person = AR.define('people', class Person {
   static endpoints = {    // overridable API endpoints - defaults to type
     create: 'people',
     read: 'people',
@@ -54,39 +49,34 @@ class Person extends Model {
   get firstName() {
     return this.name.split(' ')[0] // this.name as well as other attributes are
   }                                // defined when the model is registered
-}
-
-Registry.register(Person); // Important so that we can de-serialize records
+});
 ```
 
-Models need to be registered to call hooks like defining attribute methods and
-setting the store.
 
-#### 2. Assign the store to the Registry
+#### 2. Bind Active Redux to the store
 
 ```js
 // wherever the store is set
 import { createStore, combineReducers } from 'redux';
-import { Registry, reducer: api } from 'active-redux';
+import AR, { reducer: api } from 'active-redux';
 import reducers from 'app/reducers';
 
 const store = createStore(
   combineReducers({ api, ...reducers }),
 );
-Registry.store = store;
+AR.bind(store);
 ```
 
 This gives models access to the store for querying.
 
 
 #### Use the Model
-```
+
+```js
 // anywhere
 import Person from 'models/person';
 const joe = Person.find(5)
-// => <Person>
+// => Promise<Person>
 ```
 
-## The Reducers
-
-(more to come)
+## [The Reducers](https://coverhound.github.io/active-redux/1.0.0/module-active-redux_api.html)

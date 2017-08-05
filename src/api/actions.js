@@ -1,5 +1,8 @@
 import * as ActionTypes from './constants';
 import { createAction, apiClient } from './utils';
+/**
+ * @module active-redux/api
+ */
 
 const wrappedApiRequest = ({
   resource,
@@ -19,13 +22,86 @@ const wrappedApiRequest = ({
   return Promise.reject(err);
 });
 
+/**
+ * Configure the API -
+ * see https://github.com/mzabriskie/axios#request-config
+ * @function
+ * @param {Object} config - Axios configuration
+ */
 export const apiConfigure = createAction(ActionTypes.API_CONFIGURE);
+
+/**
+ * Clear an entity from the store
+ * @function
+ * @private
+ * @example
+ * import { apiClear } from 'active-redux';
+ *
+ * state.api.people
+ * // => Object<String: Person>
+ *
+ * dispatch(apiClear('people'))
+ *
+ * state.api.people
+ * // => {}
+ * @param {Object} data - JSON-API data
+ */
 export const apiClear = createAction(ActionTypes.API_CLEAR);
+
+/**
+ * Hydrate the store from JSON-API
+ * @function
+ * @example
+ * import { apiHydrate } from 'active-redux';
+ *
+ * state.api.people
+ * // => {}
+ *
+ * const data = [{
+ *   type: 'people',
+ *   id: '5',
+ *   attributes: {
+ *     name: 'Joe',
+ *     age: 35,
+ *   }
+ * }];
+ *
+ * dispatch(apiHydrate(data))
+ *
+ * state.api.people
+ * // => Object<String: Person>
+ * @param {Object} data - JSON-API data
+ */
 export const apiHydrate = createAction(ActionTypes.API_HYDRATE);
 
 const apiWillCreate = createAction(ActionTypes.API_WILL_CREATE);
 const apiCreateDone = createAction(ActionTypes.API_CREATE_DONE);
 const apiCreateFailed = createAction(ActionTypes.API_CREATE_FAILED);
+
+/**
+ * Create a resource via API
+ * @function
+ * @example
+ * import { apiCreate } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<null>
+ *
+ * const person = new Person({ attributes: { name: 'Joe' } });
+ *
+ * dispatch(apiCreate({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person>
+ * @param {Object} args
+ * @param {define~Model} args.resource
+ * @param {string} [args.endpoint]
+ */
 export const apiCreate = ({ resource, endpoint = resource.endpoint('create') }) => (dispatch, getState) => {
   dispatch(apiWillCreate(resource));
   return wrappedApiRequest({
@@ -45,6 +121,29 @@ export const apiCreate = ({ resource, endpoint = resource.endpoint('create') }) 
 const apiWillRead = createAction(ActionTypes.API_WILL_READ);
 const apiReadDone = createAction(ActionTypes.API_READ_DONE);
 const apiReadFailed = createAction(ActionTypes.API_READ_FAILED);
+
+/**
+ * Read a resource via API
+ * @function
+ * @example
+ * import { apiRead } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.all();
+ * // => Promise<[]>
+ *
+ * dispatch(apiRead({ resource: Person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.all();
+ * // => Promise<Array<Person>>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ */
 export const apiRead = ({ resource, endpoint = resource.endpoint('read') }) => (dispatch, getState) => {
   dispatch(apiWillRead(resource));
   return wrappedApiRequest({
@@ -64,6 +163,31 @@ export const apiRead = ({ resource, endpoint = resource.endpoint('read') }) => (
 const apiWillUpdate = createAction(ActionTypes.API_WILL_UPDATE);
 const apiUpdateDone = createAction(ActionTypes.API_UPDATE_DONE);
 const apiUpdateFailed = createAction(ActionTypes.API_UPDATE_FAILED);
+
+/**
+ * Update a resource via API
+ * @function
+ * @example
+ * import { apiUpdate } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person(id='5' name='Joe')>
+ *
+ * const person = new Person({ id: '5', attributes: { name: 'Jimmy' } });
+ *
+ * dispatch(apiUpdate({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person(id='5' name='Jimmy')>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ */
 export const apiUpdate = ({ resource, endpoint = resource.endpoint('update') }) => (
   (dispatch, getState) => {
     dispatch(apiWillUpdate(resource));
@@ -85,6 +209,31 @@ export const apiUpdate = ({ resource, endpoint = resource.endpoint('update') }) 
 const apiWillDelete = createAction(ActionTypes.API_WILL_DELETE);
 const apiDeleteDone = createAction(ActionTypes.API_DELETE_DONE);
 const apiDeleteFailed = createAction(ActionTypes.API_DELETE_FAILED);
+
+/**
+ * Delete a resource via API
+ * @function
+ * @example
+ * import { apiDelete } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person(id='5')>
+ *
+ * const person = new Person({ id: '5' });
+ *
+ * dispatch(apiDelete({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<null>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ */
 export const apiDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
   (dispatch, getState) => {
     const options = {
