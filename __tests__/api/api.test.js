@@ -43,80 +43,80 @@ describe('reducer', () => {
     });
 
 
-    describe('remoteHydrate()', () => {
+    describe('apiHydrate()', () => {
       it('populates the state with resources', () => {
-        const state = reduce(undefined, subject.remoteHydrate({ data: person }));
+        const state = reduce(undefined, subject.apiHydrate({ data: person }));
         expect(state).toMatchSnapshot();
       });
     });
 
-    describe('remoteCreate()', () => {
+    describe('apiCreate()', () => {
       let state = fullStore;
-      const remoteWillCreate = createAction(ActionTypes.REMOTE_WILL_CREATE);
-      const remoteCreateDone = createAction(ActionTypes.REMOTE_CREATE_DONE);
+      const apiWillCreate = createAction(ActionTypes.API_WILL_CREATE);
+      const apiCreateDone = createAction(ActionTypes.API_CREATE_DONE);
 
       it('increments isCreating', () => {
-        state = reduce(undefined, remoteWillCreate({ data: person }));
+        state = reduce(undefined, apiWillCreate({ data: person }));
         expect(state).toMatchSnapshot();
       });
 
       it('populates the state with resources', () => {
-        state = reduce(state, remoteCreateDone({ data: person }));
+        state = reduce(state, apiCreateDone({ data: person }));
         expect(state).toMatchSnapshot();
       });
     });
 
-    describe('remoteRead()', () => {
+    describe('apiRead()', () => {
       let state = fullStore;
-      const remoteWillRead = createAction(ActionTypes.REMOTE_WILL_READ);
-      const remoteReadDone = createAction(ActionTypes.REMOTE_READ_DONE);
+      const apiWillRead = createAction(ActionTypes.API_WILL_READ);
+      const apiReadDone = createAction(ActionTypes.API_READ_DONE);
 
       it('increments isReading', () => {
-        state = reduce(undefined, remoteWillRead({ data: person }));
+        state = reduce(undefined, apiWillRead({ data: person }));
         expect(state).toMatchSnapshot();
       });
 
       it('populates the state with resources', () => {
-        state = reduce(state, remoteReadDone({ data: person }));
+        state = reduce(state, apiReadDone({ data: person }));
         expect(state).toMatchSnapshot();
       });
     });
 
-    describe('remoteClear()', () => {
+    describe('apiClear()', () => {
       it('clears the resource', () => {
-        const state = reduce(fullStore, subject.remoteClear(person.type));
+        const state = reduce(fullStore, subject.apiClear(person.type));
         expect(state).toMatchSnapshot();
       });
     });
 
-    describe('remoteUpdate()', () => {
+    describe('apiUpdate()', () => {
       let state = fullStore;
-      const remoteWillUpdate = createAction(ActionTypes.REMOTE_WILL_UPDATE);
-      const remoteUpdateDone = createAction(ActionTypes.REMOTE_UPDATE_DONE);
+      const apiWillUpdate = createAction(ActionTypes.API_WILL_UPDATE);
+      const apiUpdateDone = createAction(ActionTypes.API_UPDATE_DONE);
 
       it('increments isUpdating and marks the resource as pending', () => {
-        state = reduce(state, remoteWillUpdate({ data: person }));
+        state = reduce(state, apiWillUpdate({ data: person }));
         expect(state).toMatchSnapshot();
       });
 
       it('updates the state with resources', () => {
-        state = reduce(state, remoteUpdateDone({ data: person }));
+        state = reduce(state, apiUpdateDone({ data: person }));
         expect(state).toMatchSnapshot();
       });
     });
 
-    describe('remoteDelete()', () => {
+    describe('apiDelete()', () => {
       let state = fullStore;
-      const remoteWillDelete = createAction(ActionTypes.REMOTE_WILL_DELETE);
-      const remoteDeleteDone = createAction(ActionTypes.REMOTE_DELETE_DONE);
+      const apiWillDelete = createAction(ActionTypes.API_WILL_DELETE);
+      const apiDeleteDone = createAction(ActionTypes.API_DELETE_DONE);
 
       it('increments isDeleting and marks the resource as pending', () => {
-        state = reduce(state, remoteWillDelete({ data: person }));
+        state = reduce(state, apiWillDelete({ data: person }));
         expect(state).toMatchSnapshot();
       });
 
       it('removes the resources from the store', () => {
-        state = reduce(state, remoteDeleteDone({ data: person }));
+        state = reduce(state, apiDeleteDone({ data: person }));
         expect(state).toMatchSnapshot();
       });
     });

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Model .__defineMethods__() defines hasMany methods 1`] = `
+exports[`define defines hasMany methods 1`] = `
 Array [
   Comment {
     "data": Object {
@@ -45,7 +45,7 @@ Array [
 ]
 `;
 
-exports[`Model .__defineMethods__() defines hasOne methods 1`] = `
+exports[`define defines hasOne methods 1`] = `
 Person {
   "data": Object {
     "attributes": Object {
@@ -77,155 +77,4 @@ Person {
     "type": "people",
   },
 }
-`;
-
-exports[`Model Store #all should return all values from a resource store 1`] = `
-Array [
-  Comment {
-    "data": Object {
-      "attributes": Object {
-        "body": "First!",
-      },
-      "id": "5",
-      "links": Object {
-        "self": "http://example.com/comments/5",
-      },
-      "relationships": Object {
-        "author": Object {
-          "data": Object {
-            "id": "9",
-            "type": "people",
-          },
-        },
-      },
-      "type": "comments",
-    },
-  },
-  Comment {
-    "data": Object {
-      "attributes": Object {
-        "body": "I like XML better",
-      },
-      "id": "12",
-      "links": Object {
-        "self": "http://example.com/comments/12",
-      },
-      "relationships": Object {
-        "author": Object {
-          "data": Object {
-            "id": "9",
-            "type": "people",
-          },
-        },
-      },
-      "type": "comments",
-    },
-  },
-]
-`;
-
-exports[`Model Store #where should allow arrays as lookup value 1`] = `
-Array [
-  Comment {
-    "data": Object {
-      "attributes": Object {
-        "body": "First!",
-      },
-      "id": "5",
-      "links": Object {
-        "self": "http://example.com/comments/5",
-      },
-      "relationships": Object {
-        "author": Object {
-          "data": Object {
-            "id": "9",
-            "type": "people",
-          },
-        },
-      },
-      "type": "comments",
-    },
-  },
-  Comment {
-    "data": Object {
-      "attributes": Object {
-        "body": "I like XML better",
-      },
-      "id": "12",
-      "links": Object {
-        "self": "http://example.com/comments/12",
-      },
-      "relationships": Object {
-        "author": Object {
-          "data": Object {
-            "id": "9",
-            "type": "people",
-          },
-        },
-      },
-      "type": "comments",
-    },
-  },
-]
-`;
-
-exports[`Model Store #where should return an array of values matching a query 1`] = `
-Array [
-  Comment {
-    "data": Object {
-      "attributes": Object {
-        "body": "First!",
-      },
-      "id": "5",
-      "links": Object {
-        "self": "http://example.com/comments/5",
-      },
-      "relationships": Object {
-        "author": Object {
-          "data": Object {
-            "id": "9",
-            "type": "people",
-          },
-        },
-      },
-      "type": "comments",
-    },
-  },
-]
-`;
-
-exports[`Model Store #where should search for nested properties 1`] = `
-Array [
-  Person {
-    "data": Object {
-      "attributes": Object {
-        "address": Object {
-          "road": "123 Main St",
-        },
-        "first-name": "Dan",
-        "last-name": "Gebhardt",
-        "twitter": "dgeb",
-      },
-      "id": "9",
-      "links": Object {
-        "self": "http://example.com/people/9",
-      },
-      "relationships": Object {
-        "comments": Object {
-          "data": Array [
-            Object {
-              "id": "5",
-              "type": "comments",
-            },
-            Object {
-              "id": "12",
-              "type": "comments",
-            },
-          ],
-        },
-      },
-      "type": "people",
-    },
-  },
-]
 `;

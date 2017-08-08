@@ -3,4 +3,5 @@
 .npmrc
 .vimrc
 /coverage
-dist
+/dist
+/docs

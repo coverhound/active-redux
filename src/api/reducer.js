@@ -24,60 +24,64 @@ const updateResources = (state, resources) => (
   imm.set(state, 'resources', mergeResources(state.resources, resources))
 );
 
+/**
+ * API Reducer
+ * @alias module:active-redux/api.reducer
+ */
 export default createReducer({
   [Types.API_CONFIGURE]: (state, { payload: apiConfig }) => (
     imm(state).set('apiConfig', apiConfig).value()
   ),
-  [Types.REMOTE_CLEAR]: (state, { payload: type }) => (
+  [Types.API_CLEAR]: (state, { payload: type }) => (
     clearResources(state, type)
   ),
-  [Types.REMOTE_HYDRATE]: (state, { payload: resources }) => (
+  [Types.API_HYDRATE]: (state, { payload: resources }) => (
     updateResources(state, resources)
   ),
 
-  [Types.REMOTE_WILL_CREATE]: (state) => (
+  [Types.API_WILL_CREATE]: (state) => (
     incrementProperty(state, 'isCreating')
   ),
-  [Types.REMOTE_CREATE_DONE]: (state, { payload: resources }) => {
+  [Types.API_CREATE_DONE]: (state, { payload: resources }) => {
     const newState = updateResources(state, resources);
     return decrementProperty(newState, 'isCreating');
   },
-  [Types.REMOTE_CREATE_FAILED]: (state) => (
+  [Types.API_CREATE_FAILED]: (state) => (
     decrementProperty(state, 'isCreating')
   ),
 
-  [Types.REMOTE_WILL_READ]: (state) => (
+  [Types.API_WILL_READ]: (state) => (
     incrementProperty(state, 'isReading')
   ),
-  [Types.REMOTE_READ_DONE]: (state, { payload: resources }) => {
+  [Types.API_READ_DONE]: (state, { payload: resources }) => {
     const newState = updateResources(state, resources);
     return decrementProperty(newState, 'isReading');
   },
-  [Types.REMOTE_READ_FAILED]: (state) => (
+  [Types.API_READ_FAILED]: (state) => (
     decrementProperty(state, 'isReading')
   ),
 
-  [Types.REMOTE_WILL_UPDATE]: (state, { payload: resources }) => {
+  [Types.API_WILL_UPDATE]: (state, { payload: resources }) => {
     const newState = incrementProperty(state, 'isUpdating');
     return markPendingResources(newState, resources);
   },
-  [Types.REMOTE_UPDATE_DONE]: (state, { payload: resources }) => {
+  [Types.API_UPDATE_DONE]: (state, { payload: resources }) => {
     const newState = updateResources(state, resources);
     return decrementProperty(newState, 'isUpdating');
   },
-  [Types.REMOTE_UPDATE_FAILED]: (state) => (
+  [Types.API_UPDATE_FAILED]: (state) => (
     decrementProperty(state, 'isUpdating')
   ),
 
-  [Types.REMOTE_WILL_DELETE]: (state, { payload: resources }) => {
+  [Types.API_WILL_DELETE]: (state, { payload: resources }) => {
     const newState = incrementProperty(state, 'isDeleting');
     return markPendingResources(newState, resources);
   },
-  [Types.REMOTE_DELETE_DONE]: (state, { payload: resources }) => {
+  [Types.API_DELETE_DONE]: (state, { payload: resources }) => {
     const newState = clearResources(state, resourcesArray(resources.data));
     return decrementProperty(newState, 'isDeleting');
   },
-  [Types.REMOTE_DELETE_FAILED]: (state) => (
+  [Types.API_DELETE_FAILED]: (state) => (
     decrementProperty(state, 'isDeleting')
   ),
 }, initialState);
