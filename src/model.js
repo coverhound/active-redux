@@ -14,7 +14,7 @@ const invalidAttribute = (field) => (
 const defineAttribute = (object, field, attribute) => {
   Object.defineProperty(object, field, {
     get() {
-      return attribute.cast(this.data.attributes[field]);
+      return attribute.cast(this.data.attributes[attribute.name || field]);
     }
   });
 };
@@ -22,7 +22,7 @@ const defineAttribute = (object, field, attribute) => {
 /**
  * @private
  */
-const defineRelationship = (object, field) => {
+const defineRelationship = (object, field, attribute) => {
   Object.defineProperty(object, field, {
     get() {
       const { isArray, resource } = this.constructor.attributes[field];
@@ -30,7 +30,7 @@ const defineRelationship = (object, field) => {
       if (!model) {
         throw new Error(`Unregistered model: ${resource}`);
       }
-      const data = this.data.relationships[field].data;
+      const data = this.data.relationships[attribute.name || field].data;
 
       return isArray
         ? Store.where({ id: data.map((d) => d.id) }, { model })
@@ -52,7 +52,7 @@ const defineMethods = (object, attributes) => {
         defineAttribute(object.prototype, field, attribute);
         break;
       case 'relationship':
-        defineRelationship(object.prototype, field);
+        defineRelationship(object.prototype, field, attribute);
         relationships[attribute.resource] = { key: field, ...attribute };
         break;
       default:

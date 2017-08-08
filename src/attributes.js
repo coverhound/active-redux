@@ -32,11 +32,14 @@ import yup from 'yup';
  * const person = new Person(data);
  * person.employer => Promise<Company>
  * @param {string} resource JSON-API type of relationship
+ * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  */
-export const hasOne = (resource) => ({
+export const hasOne = (resource, { name } = {}) => ({
   type: 'relationship',
-  isArray: false,
   resource,
+  name,
+  isArray: false,
 });
 
 /**
@@ -69,11 +72,14 @@ export const hasOne = (resource) => ({
  * const person = new Person(data);
  * person.posts // => Promise<Array<Article>>
  * @param {string} resource JSON-API type of relationship
+ * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  */
-export const hasMany = (resource) => ({
+export const hasMany = (resource, { name } = {}) => ({
   type: 'relationship',
-  isArray: true,
   resource,
+  name,
+  isArray: true,
 });
 
 /**
@@ -92,10 +98,12 @@ export const hasMany = (resource) => ({
  * const blank = new Person({});
  * blank.name // => "Bob"
  * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  * @param {(string|function)} options.default Default value for this attribute
  */
-export const string = ({ default: defaultValue } = {}) => ({
+export const string = ({ name, default: defaultValue } = {}) => ({
   type: 'attribute',
+  name,
   cast: (obj) => yup.string().default(defaultValue).nullable().cast(obj),
 });
 
@@ -115,10 +123,12 @@ export const string = ({ default: defaultValue } = {}) => ({
  * const blank = new Person({});
  * blank.age // => 13
  * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  * @param {(number|function)} options.default Default value for this attribute
  */
-export const number = ({ default: defaultValue } = {}) => ({
+export const number = ({ name, default: defaultValue } = {}) => ({
   type: 'attribute',
+  name,
   cast: (obj) => yup.number().default(defaultValue).nullable().cast(obj),
 });
 
@@ -138,10 +148,12 @@ export const number = ({ default: defaultValue } = {}) => ({
  * const blank = new Person({});
  * blank.birthDate // => Date: [today]
  * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  * @param {(date|function)} options.default Default value for this attribute
  */
-export const date = ({ default: defaultValue } = {}) => ({
+export const date = ({ name, default: defaultValue } = {}) => ({
   type: 'attribute',
+  name,
   cast: (obj) => {
     if (obj === undefined) return defaultValue;
     if (obj === null) return obj;
@@ -156,7 +168,7 @@ export const date = ({ default: defaultValue } = {}) => ({
  * @example
  * class Person {
  *   static attributes = {
- *     isSubscribed: Attr.boolean({ default: true }),
+ *     isSubscribed: Attr.boolean({ name: 'is-subscribed', default: true }),
  *   };
  * }
  *
@@ -166,10 +178,12 @@ export const date = ({ default: defaultValue } = {}) => ({
  * const blank = new Person({});
  * blank.isSubscribed // => true
  * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  * @param {(boolean|function)} options.default Default value for this attribute
  */
-export const boolean = ({ default: defaultValue } = {}) => ({
+export const boolean = ({ name, default: defaultValue } = {}) => ({
   type: 'attribute',
+  name,
   cast: (obj) => (
     typeof obj === 'string' ?
       Boolean(obj) :
@@ -188,15 +202,17 @@ export const boolean = ({ default: defaultValue } = {}) => ({
  * }
  *
  * const person = new Person(data);
- * person.interests // => ["tennis", "squash"]
+ * person.interests // => ['tennis', 'squash']
  *
  * const blank = new Person({});
  * blank.interests // => []
  * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  * @param {(array|function)} options.default Default value for this attribute
  */
-export const array = () => ({
+export const array = ({ name } = {}) => ({
   type: 'attribute',
+  name,
   cast: (obj) => (Array.isArray(obj) ? obj : [obj]),
 });
 
@@ -206,7 +222,7 @@ export const array = () => ({
  * @example
  * class Person {
  *   static attributes = {
- *     isSubscribed: Attr.boolean({ default: {} }),
+ *     isSubscribed: Attr.boolean({ name: 'is-subscribed', default: {} }),
  *   };
  * }
  *
@@ -216,10 +232,12 @@ export const array = () => ({
  * const blank = new Person({});
  * blank.isSubscribed // => true
  * @param {Object} options
+ * @param {string} options.name JSON-API name of the attribute
  * @param {(object|function)} options.default Default value for this attribute
  */
-export const object = () => ({
+export const object = ({ name } = {}) => ({
   type: 'attribute',
+  name,
   cast: (obj) => (
     typeof obj === 'object' ? obj : {}
   ),
