@@ -1,18 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`reducer actions apiConfigure() updates the apiConfig key 1`] = `
-Object {
-  "apiConfig": Object {
-    "baseUrl": "http://coverhound.com/api",
-  },
-  "isCreating": 0,
-  "isDeleting": 0,
-  "isReading": 0,
-  "isUpdating": 0,
-  "resources": Object {},
-}
-`;
-
 exports[`reducer actions apiClear() clears the resource 1`] = `
 Object {
   "apiConfig": Object {},
@@ -23,6 +10,19 @@ Object {
   "resources": Object {
     "people": Object {},
   },
+}
+`;
+
+exports[`reducer actions apiConfigure() updates the apiConfig key 1`] = `
+Object {
+  "apiConfig": Object {
+    "baseUrl": "http://coverhound.com/api",
+  },
+  "isCreating": 0,
+  "isDeleting": 0,
+  "isReading": 0,
+  "isUpdating": 0,
+  "resources": Object {},
 }
 `;
 
@@ -192,11 +192,6 @@ Object {
   "isUpdating": 0,
   "resources": Object {
     "people": Object {
-      "2": Object {
-        "attributes": Object {
-          "name": "Yangster",
-        },
-      },
       "5": Object {
         "attributes": Object {
           "age": 25,

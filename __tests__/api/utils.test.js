@@ -1,9 +1,26 @@
+jest.mock('active-redux/registry', () => ({
+  people: {
+    relationships: {
+      comments: { key: 'comments', isArray: true }
+    }
+  },
+  comments: {
+    relationships: {
+      people: { key: 'author', isArray: false }
+    }
+  },
+  get(type) {
+    return this[type];
+  }
+}));
 import * as utils from 'active-redux/api/utils';
+import jsonApiData from 'fixtures/json-api-body';
+import imm from 'object-path-immutable';
+
+const [person, ...comments] = jsonApiData.included;
+const comment = comments[0];
 
 describe('Utils', () => {
-  const person = { type: 'people', id: 1, attributes: {} };
-  const post = { type: 'posts', id: 1, attributes: {} };
-
   describe('incrementProperty()', () => {
     test('increments the property', () => {
       const state = { isReading: 0 };
@@ -32,36 +49,70 @@ describe('Utils', () => {
     });
   });
 
+  describe('createReverseRelationships()', () => {
+    const state = {
+      resources: {
+        people: {
+          9: {
+            relationships: {
+              comments: {
+                data: [
+                  { id: '12', type: 'comments' }
+                ]
+              }
+            }
+          }
+        },
+        comments: {
+          5: {},
+          12: {}
+        },
+      }
+    };
+
+    test('updates hasMany relationships', () => {
+      const newState = imm(state);
+      utils.createReverseRelationships(state, newState, comments[0]);
+      const subject = newState.value().resources.people;
+
+      const expectedData = [{ id: '12', type: 'comments' }, { id: '5', type: 'comments' }];
+      expect(subject['9'].relationships.comments.data).toEqual(expectedData);
+      expect(subject['9'].relationships).toMatchSnapshot();
+    });
+
+    test('updates hasOne relationships', () => {
+      const newState = imm(state);
+      utils.createReverseRelationships(state, newState, person);
+      const subject = newState.value().resources.comments;
+
+      const expectedData = { id: '9', type: 'people' };
+      [subject['5'], subject['12']].forEach((model) => {
+        expect(model.relationships.author.data).toEqual(expectedData);
+      });
+    });
+  });
+
   describe('mergeResources()', () => {
     test('adds singular resources', () => {
       const resources = { data: person };
-      const expected = { [person.type]: { [person.id]: person } };
-      expect(utils.mergeResources({}, resources)).toEqual(expected);
+      expect(utils.mergeResources({}, resources)).toMatchSnapshot();
     });
 
     test('adds multiple resources', () => {
-      const resources = { data: [person, post] };
-      const expected = {
-        [person.type]: { [person.id]: person },
-        [post.type]: { [post.id]: post }
-      };
-      expect(utils.mergeResources({}, resources)).toEqual(expected);
+      const resources = { data: [person, comments[0]] };
+      expect(utils.mergeResources({}, resources)).toMatchSnapshot();
     });
 
     test('adds included resources', () => {
-      const resources = { data: [person], included: [post] };
-      const expected = {
-        [person.type]: { [person.id]: person },
-        [post.type]: { [post.id]: post }
-      };
-      expect(utils.mergeResources({}, resources)).toEqual(expected);
+      const resources = { data: [person], included: [comments[0]] };
+      expect(utils.mergeResources({}, resources)).toMatchSnapshot();
     });
 
     test('doesn\'t mutate the original object', () => {
-      const state = { [person.type]: 'foo' };
+      const state = { resources: { [person.type]: 'foo' } };
       const resources = { data: person };
       utils.mergeResources(state, resources);
-      expect(state).toEqual({ [person.type]: 'foo' });
+      expect(state).toEqual({ resources: { [person.type]: 'foo' } });
     });
   });
 
@@ -69,7 +120,7 @@ describe('Utils', () => {
     const oldState = {
       resources: {
         [person.type]: { [person.id]: person },
-        [post.type]: { [post.id]: post },
+        [comment.type]: { [comment.id]: comment },
       }
     };
 
@@ -78,7 +129,7 @@ describe('Utils', () => {
         const expected = {
           resources: {
             [person.type]: {},
-            [post.type]: { [post.id]: post }
+            [comment.type]: { [comment.id]: comment }
           }
         };
         expect(utils.clearResources(oldState, person)).toEqual(expected);
@@ -90,10 +141,10 @@ describe('Utils', () => {
         const expected = {
           resources: {
             [person.type]: {},
-            [post.type]: {}
+            [comment.type]: {}
           }
         };
-        expect(utils.clearResources(oldState, [person, post])).toEqual(expected);
+        expect(utils.clearResources(oldState, [person, comment])).toEqual(expected);
       });
     });
 
@@ -102,7 +153,7 @@ describe('Utils', () => {
         const expected = {
           resources: {
             [person.type]: {},
-            [post.type]: { [post.id]: post }
+            [comment.type]: { [comment.id]: comment }
           }
         };
         expect(utils.clearResources(oldState, person.type)).toEqual(expected);
@@ -118,7 +169,7 @@ describe('Utils', () => {
 
     describe('doesn\'t mutate the original state', () => {
       const state = {
-        resources: { [post.type]: { [post.id]: post } }
+        resources: { [comment.type]: { [comment.id]: comment } }
       };
       const expected = JSON.parse(JSON.stringify(state));
       utils.clearResources(state);
