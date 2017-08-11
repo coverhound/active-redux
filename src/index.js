@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-
 import Store from './store';
 import define from './model';
 

@@ -1,3 +1,4 @@
+import './polyfill';
 import { remoteRead } from './api';
 
 /**
