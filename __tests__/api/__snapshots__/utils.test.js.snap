@@ -1,0 +1,206 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Utils createReverseRelationships() updates hasMany relationships 1`] = `
+Object {
+  "comments": Object {
+    "data": Array [
+      Object {
+        "id": "12",
+        "type": "comments",
+      },
+      Object {
+        "id": "5",
+        "type": "comments",
+      },
+    ],
+  },
+}
+`;
+
+exports[`Utils mergeResources() adds included resources 1`] = `
+Object {
+  "resources": Object {
+    "comments": Object {
+      "5": Object {
+        "attributes": Object {
+          "body": "First!",
+        },
+        "id": "5",
+        "links": Object {
+          "self": "http://example.com/comments/5",
+        },
+        "relationships": Object {
+          "author": Object {
+            "data": Object {
+              "id": "9",
+              "type": "people",
+            },
+          },
+        },
+        "type": "comments",
+      },
+    },
+    "people": Object {
+      "9": Object {
+        "attributes": Object {
+          "address": Object {
+            "road": "123 Main St",
+          },
+          "first-name": "Dan",
+          "last-name": "Gebhardt",
+          "twitter": "dgeb",
+        },
+        "id": "9",
+        "links": Object {
+          "self": "http://example.com/people/9",
+        },
+        "relationships": Object {
+          "comments": Object {
+            "data": Array [
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+              Object {
+                "id": "12",
+                "type": "comments",
+              },
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+            ],
+          },
+        },
+        "type": "people",
+      },
+    },
+  },
+}
+`;
+
+exports[`Utils mergeResources() adds multiple resources 1`] = `
+Object {
+  "resources": Object {
+    "comments": Object {
+      "5": Object {
+        "attributes": Object {
+          "body": "First!",
+        },
+        "id": "5",
+        "links": Object {
+          "self": "http://example.com/comments/5",
+        },
+        "relationships": Object {
+          "author": Object {
+            "data": Object {
+              "id": "9",
+              "type": "people",
+            },
+          },
+        },
+        "type": "comments",
+      },
+    },
+    "people": Object {
+      "9": Object {
+        "attributes": Object {
+          "address": Object {
+            "road": "123 Main St",
+          },
+          "first-name": "Dan",
+          "last-name": "Gebhardt",
+          "twitter": "dgeb",
+        },
+        "id": "9",
+        "links": Object {
+          "self": "http://example.com/people/9",
+        },
+        "relationships": Object {
+          "comments": Object {
+            "data": Array [
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+              Object {
+                "id": "12",
+                "type": "comments",
+              },
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+            ],
+          },
+        },
+        "type": "people",
+      },
+    },
+  },
+}
+`;
+
+exports[`Utils mergeResources() adds singular resources 1`] = `
+Object {
+  "resources": Object {
+    "comments": Object {
+      "12": Object {
+        "relationships": Object {
+          "author": Object {
+            "data": Object {
+              "id": "9",
+              "type": "people",
+            },
+          },
+        },
+      },
+      "5": Object {
+        "relationships": Object {
+          "author": Object {
+            "data": Object {
+              "id": "9",
+              "type": "people",
+            },
+          },
+        },
+      },
+    },
+    "people": Object {
+      "9": Object {
+        "attributes": Object {
+          "address": Object {
+            "road": "123 Main St",
+          },
+          "first-name": "Dan",
+          "last-name": "Gebhardt",
+          "twitter": "dgeb",
+        },
+        "id": "9",
+        "links": Object {
+          "self": "http://example.com/people/9",
+        },
+        "relationships": Object {
+          "comments": Object {
+            "data": Array [
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+              Object {
+                "id": "12",
+                "type": "comments",
+              },
+            ],
+          },
+        },
+        "type": "people",
+      },
+    },
+  },
+}
+`;

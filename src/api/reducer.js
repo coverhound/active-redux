@@ -20,10 +20,6 @@ const initialState = {
   isDeleting: 0,
 };
 
-const updateResources = (state, resources) => (
-  imm.set(state, 'resources', mergeResources(state.resources, resources))
-);
-
 /**
  * API Reducer
  * @alias module:active-redux/api.reducer
@@ -36,14 +32,14 @@ export default createReducer({
     clearResources(state, type)
   ),
   [Types.API_HYDRATE]: (state, { payload: resources }) => (
-    updateResources(state, resources)
+    mergeResources(state, resources)
   ),
 
   [Types.API_WILL_CREATE]: (state) => (
     incrementProperty(state, 'isCreating')
   ),
   [Types.API_CREATE_DONE]: (state, { payload: resources }) => {
-    const newState = updateResources(state, resources);
+    const newState = mergeResources(state, resources);
     return decrementProperty(newState, 'isCreating');
   },
   [Types.API_CREATE_FAILED]: (state) => (
@@ -54,7 +50,7 @@ export default createReducer({
     incrementProperty(state, 'isReading')
   ),
   [Types.API_READ_DONE]: (state, { payload: resources }) => {
-    const newState = updateResources(state, resources);
+    const newState = mergeResources(state, resources);
     return decrementProperty(newState, 'isReading');
   },
   [Types.API_READ_FAILED]: (state) => (
@@ -66,7 +62,7 @@ export default createReducer({
     return markPendingResources(newState, resources);
   },
   [Types.API_UPDATE_DONE]: (state, { payload: resources }) => {
-    const newState = updateResources(state, resources);
+    const newState = mergeResources(state, resources);
     return decrementProperty(newState, 'isUpdating');
   },
   [Types.API_UPDATE_FAILED]: (state) => (
