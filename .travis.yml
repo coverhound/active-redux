@@ -7,6 +7,9 @@ cache:
   directories:
   - ".eslintcache"
   - node_modules
+branches:
+  only:
+    - master
 script:
 - yarn run test:ci
 after_success: ./docs.sh
