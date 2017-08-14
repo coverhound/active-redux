@@ -1,6 +1,6 @@
-import 'babel-polyfill';
 import imm from 'object-path-immutable';
 import Registry from '../../registry';
+import '../../polyfill';
 
 export apiClient from './api-client';
 

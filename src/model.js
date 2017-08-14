@@ -1,3 +1,4 @@
+import './polyfill';
 import Store from './store';
 import Registry from './registry';
 
