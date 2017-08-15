@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>model.js - Documentation</title>
+    <title>api/utils/index.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">model.js</h1>
+    <h1 class="page-title">api/utils/index.js</h1>
     
 
     
@@ -39,230 +39,162 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import './polyfill';
-import Store from './store';
-import Registry from './registry';
+            <pre class="prettyprint source linenums"><code>import imm from 'object-path-immutable';
+import Registry from '../../registry';
+import '../../polyfill';
+
+export apiClient from './api-client';
 
 /**
+ * @module
  * @private
  */
-const invalidAttribute = (field) => (
-  new Error(`${field} needs an attribute type`)
+
+/**
+ * @example
+ * incrementProperty(state, 'isReading')
+ * @param {Object} state Object on which the key is incremented
+ * @param {string} key Key to increment
+ */
+export const incrementProperty = (state, key) => (
+  imm.set(state, key, state[key] + 1)
 );
 
 /**
- * @private
- */
-const defineAttribute = (object, field, attribute) => {
-  Object.defineProperty(object, field, {
-    get() {
-      return attribute.cast(this.data.attributes[attribute.name || field]);
-    }
-  });
-};
-
-/**
- * @private
- */
-const defineRelationship = (object, field, attribute) => {
-  Object.defineProperty(object, field, {
-    get() {
-      const { isArray, resource } = this.constructor.attributes[field];
-      const model = Registry.get(resource);
-      if (!model) {
-        throw new Error(`Unregistered model: ${resource}`);
-      }
-      const data = this.data.relationships[attribute.name || field].data;
-
-      return isArray
-        ? Store.where({ id: data.map((d) => d.id) }, { model })
-        : Store.find({ id: data.id }, { model });
-    }
-  });
-};
-
-/**
- * Define JSON-API attributes and relationships
- * @private
- */
-const defineMethods = (object, attributes) => {
-  const relationships = {};
-
-  Object.entries(attributes).forEach(([field, attribute]) => {
-    switch (attribute.type) {
-      case 'attribute':
-        defineAttribute(object.prototype, field, attribute);
-        break;
-      case 'relationship':
-        defineRelationship(object.prototype, field, attribute);
-        relationships[attribute.resource] = { key: field, ...attribute };
-        break;
-      default:
-        throw invalidAttribute(field);
-    }
-  });
-
-  return relationships;
-};
-
-/**
- * @private
- */
-const copyClassName = (from, to) => {
-  Object.defineProperty(to, 'name', {
-    value: from.name,
-    writable: false,
-    enumerable: false,
-    configurable: false,
-  });
-};
-
-/**
- * Helper function to create endpoint URIs
- * @private
  * @example
- * const obj = { type: 'animal', id: 5 }
- * parseParams(obj, '/api/v1/:type/:id')
- * // => '/api/v1/animal/5'
+ * decrementProperty(state, 'isReading')
+ * @param {Object} state Object on which the key is decremented
+ * @param {string} key Key to decrement
  */
-export const parseParams = (context, string) => {
-  const regexp = /:[^/.]+/g;
-  return string.replace(regexp, (match) => context[match.substring(1)]);
+export const decrementProperty = (state, key) => (
+  imm.set(state, key, state[key] - 1)
+);
+
+/**
+ * @param {Array|Object} data
+ */
+export const resourcesArray = (data = []) => (
+  Array.isArray(data) ? data : [data]
+);
+
+/**
+ * @example
+ * const obj = { foo: bar: { baz: 'hi' } }
+ * getProperty(obj, 'foo', 'bar', 'baz') // => 'hi'
+ * getProperty(obj, 'a', 'b', 'c') // => undefined
+ *
+ * @param {Object} object Object to traverse
+ * @param {String[]} keys Keys to look up
+ */
+export const getProperty = (object, ...keys) => (
+  keys.reduce((acc, key) => {
+    if (acc === undefined) return acc;
+    return acc[key];
+  }, object)
+);
+
+/**
+ * Creates reverse relationships for data merged into the state
+ * @param {Object} state
+ * @param {Object} newState Immutable Object via object-path-immutable
+ * @param {Object} data JSON-API data object
+ * @param {Object} data.id
+ * @param {Object} data.type
+ * @param {Object} data.relationships
+ */
+export const createReverseRelationships = (state, newState, { id, type, relationships = {} }) => {
+  Object.values(relationships).forEach(({ data }) => {
+    const children = resourcesArray(data);
+    const childModel = Registry.get(children[0].type);
+    const childData = { type, id };
+    const { key, isArray } = childModel.relationships[type];
+
+    children.forEach(({ type: relType, id: relId }) => {
+      const objectPath = ['resources', relType, relId, 'relationships', key];
+      const existingRelationships = resourcesArray(getProperty(state, ...objectPath));
+
+      if (!isArray) {
+        newState.set([...objectPath, 'data'], childData);
+        return;
+      }
+
+      if (existingRelationships.find((relationship) => relationship.id === id)) return;
+
+      newState.push([...objectPath, 'data'], childData);
+    });
+  });
 };
 
 /**
-  * Defines a model
-  * @alias module:active-redux.define
-  * @example
-  * const Person = ActiveRedux.define('people', class Person {});
-  * @param {string} type - JSON-API type for the model
-  * @param {Class} [model] - Class to extend
-  * @return {Model}
-  */
-export default function define(type, model = class {}) {
-  /**
-   * Active Redux Model
-   */
-  const Model = class extends model {
+ * Merges all resources into the state
+ * @param {Object} state
+ * @param {Object} payload JSON-API payload
+ * @param {Object} payload.data
+ * @param {Object} payload.included
+ */
+export const mergeResources = (state, { data, included = [] }) => {
+  const newState = imm(state);
 
-    /**
-    * JSON-API type of the model
-    * @private
-    */
-    static type = type;
+  resourcesArray(data).concat(included).forEach((dataObj) => {
+    // if we don't do this and the ID is a number, it'll create an array
+    newState.set(['resources', dataObj.type], state[dataObj.type] || {});
+    newState.set(['resources', dataObj.type, dataObj.id], dataObj);
+    createReverseRelationships(state, newState, dataObj);
+  });
 
-    /**
-    * Attributes of a model, for which methods will be defined
-    * @example
-    * import Model, { Attr } from 'active-redux';
-    *
-    * const Person = Model.define('people', class Person {
-    *   static attributes = {
-    *     name: Attr.string(),
-    *   }
-    * });
-    *
-    * const joe = new Person({ attributes: { name: "Joe" } });
-    * joe.name // => "Joe"
-    */
-    static attributes = model.attributes || {};
+  return newState.value();
+};
 
-    /**
-    * Endpoints that will be queried. Can be overwritten.
-    * @private
-    */
-    static endpoints = model.endpoints || {
-      create: ':type',
-      read: ':type',
-      update: ':type/:id',
-      delete: ':type/:id',
-    };
-
-    /**
-    * @private
-    */
-    static relationships = {};
-
-    /**
-    * Gets all of that resource
-    * @example
-    * Person.all()
-    * // => Promise&lt;Array&lt;Person>>
-    * @return {Promise&lt;Array&lt;this>>} Array of model instances
-    */
-    static all() {
-      return Store.all({ model: this });
+/**
+ * This function clears differently based on what's passed in
+ * Object: { type, id } -> this resource is cleared
+ * Array: Each of the resources is cleared
+ * String: '[type]' -> These resources are cleared
+ * undefined: -> All resources are cleared
+ * @param {Object} state
+ * @param {Object[]|Object|string|undefined} data
+ */
+export const clearResources = (state, data) => {
+  switch (typeof data) {
+    case 'object': {
+      if (Array.isArray(data)) return data.reduce(clearResources, state);
+      const { type, id } = data;
+      return imm.del(state, ['resources', type, id]);
     }
+    case 'string': return imm.set(state, ['resources', data], {});
+    case 'undefined': return imm.set(state, 'resources', {});
+    default: return state;
+  }
+};
 
-    /**
-    * Queries the store for that resource
-    * @example
-    * Person.where({ name: "Joe" })
-    * // => Promise&lt;Array&lt;Person>>
-    * @param {Object} query - Query for the store
-    * @param {Object} [options]
-    * @param {boolean} [options.remote] - Call to API if no records found?
-    * @return {Promise&lt;Array&lt;this>>} Array of model instances
-    */
-    static where(query = {}, options = {}) {
-      return Store.where(query, { model: this, ...options });
-    }
+/**
+ * @example
+ * const CUSTOM_REDUX_ACTION = 'CUSTOM_REDUX_ACTION';
+ * export const customReduxAction = createAction(CUSTOM_REDUX_ACTION); // => [function]
+ * customReduxAction(payload) // => { type, payload }
+ * @param {string} type Action type
+ */
+export const createAction = (type) => (payload) => ({ type, payload });
 
-    /**
-    * Gets one of that resource
-    * @example
-    * Person.find({ id: 5 })
-    * // => Promise&lt;Person>
-    * @param {Object} query - Query for the store
-    * @param {Object} [options]
-    * @param {boolean} [options.remote] - Call to API if no records found?
-    * @return {Promise&lt;(this|null)>} A model instance
-    */
-    static find(query = {}, options = {}) {
-      return Store.find(query, { model: this, ...options });
-    }
+/**
+ * @param {Object} mappings Reducer handlers per action
+ * @param {Object} initialState
+ */
+export const createReducer = (mappings, initialState) => (state = initialState, action) => (
+  mappings[action.type] ? mappings[action.type](state, action) : state
+);
 
-    /**
-    * Find the endpoint for a specific action
-    * @private
-    */
-    static endpoint(action, params = this) {
-      return parseParams(params, this.endpoints[action]);
-    }
-
-    /**
-    * @private
-    * @see Model.endpoint
-    */
-    endpoint(action) {
-      return this.constructor.endpoint(action, this);
-    }
-
-    constructor(data) {
-      super(data);
-      this.data = data;
-    }
-
-    /**
-     * @return {string} JSON-API Resource ID
-     */
-    get id() {
-      return this.data.id;
-    }
-
-    /**
-     * @return {string} JSON-API Resource Type
-     */
-    get type() {
-      return this.constructor.type;
-    }
-  };
-
-  copyClassName(model, Model);
-  Model.relationships = defineMethods(Model, Model.attributes);
-  Registry.register(Model);
-  return Model;
-}
+/**
+ * @param {Object} state
+ * @param {Object} resource
+ * @param {Array|Object} resource.data
+ */
+export const markPendingResources = (state, { data }) => (
+  resourcesArray(data).reduce((acc, resource) => {
+    if (!getProperty(state, 'resources', resource.type, resource.id)) return acc;
+    return acc.set(['resources', resource.type, resource.id, 'isPending'], true);
+  }, imm(state)).value()
+);
 </code></pre>
         </article>
     </section>
