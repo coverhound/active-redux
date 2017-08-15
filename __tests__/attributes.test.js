@@ -118,6 +118,16 @@ describe('Attr', () => {
   describe('.array()', () => {
     const casting = Attr.array().cast;
 
+    test('leaves null and undefined', () => {
+      expect(casting(null)).toEqual(null);
+      expect(casting(undefined)).toEqual(undefined);
+    });
+
+    test('casts undefined to default', () => {
+      const recasting = Attr.array({ default: [] }).cast;
+      expect(recasting(undefined)).toEqual([]);
+    });
+
     test('wraps non-arrays in an array', () => {
       const date = new Date();
       expect(casting('foo')).toEqual(['foo']);

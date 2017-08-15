@@ -1,6 +1,3 @@
-// we can remove the yup dependency, in all likelyhood
-import yup from 'yup';
-
 /**
  * @module active-redux/attributes
  */
@@ -82,6 +79,20 @@ export const hasMany = (resource, { name } = {}) => ({
   isArray: true,
 });
 
+const attribute = ({ name, isType, cast, defaultValue, nullable = false }) => ({
+  type: 'attribute',
+  name,
+  cast: (value) => {
+    if (value === undefined) {
+      return typeof defaultValue === 'function'
+        ? defaultValue.call(value)
+        : defaultValue && JSON.parse(JSON.stringify(defaultValue));
+    }
+    if (isType(value) || (nullable && value === null)) return value;
+    return cast(value);
+  }
+});
+
 /**
  * Defines an attribute that is coerced into a string
  * @function
@@ -101,10 +112,12 @@ export const hasMany = (resource, { name } = {}) => ({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(string|function)} options.default Default value for this attribute
  */
-export const string = ({ name, default: defaultValue } = {}) => ({
-  type: 'attribute',
+export const string = ({ name, default: defaultValue } = {}) => attribute({
+  isType: (value) => typeof value === 'string',
+  cast: (value) => (typeof value === 'object' ? '' : String(value)),
+  nullable: true,
   name,
-  cast: (obj) => yup.string().default(defaultValue).nullable().cast(obj),
+  defaultValue,
 });
 
 /**
@@ -126,10 +139,12 @@ export const string = ({ name, default: defaultValue } = {}) => ({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(number|function)} options.default Default value for this attribute
  */
-export const number = ({ name, default: defaultValue } = {}) => ({
-  type: 'attribute',
+export const number = ({ name, default: defaultValue } = {}) => attribute({
+  isType: (value) => typeof value === 'number',
+  cast: parseFloat,
+  nullable: true,
   name,
-  cast: (obj) => yup.number().default(defaultValue).nullable().cast(obj),
+  defaultValue,
 });
 
 /**
@@ -151,15 +166,20 @@ export const number = ({ name, default: defaultValue } = {}) => ({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(date|function)} options.default Default value for this attribute
  */
-export const date = ({ name, default: defaultValue } = {}) => ({
-  type: 'attribute',
-  name,
-  cast: (obj) => {
-    if (obj === undefined) return defaultValue;
-    if (obj === null) return obj;
-    if (typeof obj === 'number') return new Date(obj);
-    return yup.date().cast(obj);
+export const date = ({ name, default: defaultValue } = {}) => attribute({
+  isType: (value) => (
+    Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())
+  ),
+  cast: (value) => {
+    try {
+      return new Date(value);
+    } catch (e) {
+      return null;
+    }
   },
+  nullable: true,
+  name,
+  defaultValue,
 });
 
 /**
@@ -181,14 +201,16 @@ export const date = ({ name, default: defaultValue } = {}) => ({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(boolean|function)} options.default Default value for this attribute
  */
-export const boolean = ({ name, default: defaultValue } = {}) => ({
-  type: 'attribute',
+export const boolean = ({ name, default: defaultValue } = {}) => attribute({
+  isType: (value) => typeof value === 'boolean',
+  cast: (value) => {
+    if (/^(true|1)$/i.test(value)) return true;
+    if (/^(false|0)$/i.test(value)) return false;
+    return Boolean(value);
+  },
+  nullable: true,
   name,
-  cast: (obj) => (
-    typeof obj === 'string' ?
-      Boolean(obj) :
-      yup.boolean().default(defaultValue).nullable().cast(obj)
-  ),
+  defaultValue,
 });
 
 /**
@@ -210,10 +232,12 @@ export const boolean = ({ name, default: defaultValue } = {}) => ({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(array|function)} options.default Default value for this attribute
  */
-export const array = ({ name } = {}) => ({
-  type: 'attribute',
+export const array = ({ name, default: defaultValue } = {}) => attribute({
+  isType: (value) => Array.isArray(value),
+  cast: (value) => [value],
+  nullable: true,
   name,
-  cast: (obj) => (Array.isArray(obj) ? obj : [obj]),
+  defaultValue,
 });
 
 /**
@@ -235,10 +259,10 @@ export const array = ({ name } = {}) => ({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(object|function)} options.default Default value for this attribute
  */
-export const object = ({ name } = {}) => ({
-  type: 'attribute',
+export const object = ({ name, default: defaultValue } = {}) => attribute({
+  isType: (value) => typeof value === 'object',
+  cast: () => ({}),
+  nullable: true,
   name,
-  cast: (obj) => (
-    typeof obj === 'object' ? obj : {}
-  ),
+  defaultValue,
 });

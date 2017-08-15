@@ -21,8 +21,7 @@
     "axios": "^0.16.1",
     "object-path-immutable": "^0.5.0",
     "object.entries": "^1.0.4",
-    "object.values": "^1.0.4",
-    "yup": "^0.21.3"
+    "object.values": "^1.0.4"
   },
   "devDependencies": {
     "@coverhound/eslint-config-coverhound": "^1.0.1",
