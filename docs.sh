@@ -2,7 +2,7 @@
 set -e
 
 SOURCE_BRANCH="master"
-if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" -o "$TRAVIS_REPO_SLUG" == "coverhound/active-redux" ]; then
+if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" -o "$TRAVIS_REPO_SLUG" != "coverhound/active-redux" ]; then
   echo "Skipping deploy; just doing a build."
   exit 0
 fi
