@@ -113,9 +113,9 @@ export default function define(type, model = class {}) {
     /**
     * Attributes of a model, for which methods will be defined
     * @example
-    * import Model, { Attr } from 'active-redux';
+    * import { Attr, define } from 'active-redux';
     *
-    * const Person = Model.define('people', class Person {
+    * const Person = define('people', class Person {
     *   static attributes = {
     *     name: Attr.string(),
     *   }

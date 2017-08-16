@@ -1,4 +1,4 @@
-import AR, { Attr } from 'active-redux';
+import { Attr, bind, define } from 'active-redux';
 import jsonApiData from 'fixtures/json-api-body';
 import mockStore from 'fixtures/store';
 
@@ -7,12 +7,12 @@ const [person, ...comments] = jsonApiData.included;
 
 describe('define', () => {
   test('sets the type', () => {
-    const Article = AR.define('bazinga', class Article {});
+    const Article = define('bazinga', class Article {});
     expect(Article.type).toEqual('bazinga');
   });
 
   test('defines attribute methods', () => {
-    const Article = AR.define('foo', class Article {
+    const Article = define('foo', class Article {
       static attributes = {
         title: Attr.string()
       };
@@ -22,8 +22,8 @@ describe('define', () => {
   });
 
   test('defines hasOne methods', async () => {
-    AR.define('people', class Person {});
-    const Comment = AR.define('comments', class Comment {
+    define('people', class Person {});
+    const Comment = define('comments', class Comment {
       static attributes = {
         author: Attr.hasOne('people'),
       };
@@ -34,7 +34,7 @@ describe('define', () => {
   });
 
   test('defines hasMany methods', async () => {
-    const Person = AR.define('people', class Person {
+    const Person = define('people', class Person {
       static attributes = {
         comments: Attr.hasMany('comments'),
       }
@@ -45,7 +45,7 @@ describe('define', () => {
   });
 
   test('should throw if attribute is invalid', () => {
-    expect(() => AR.define('articles', class Article {
+    expect(() => define('articles', class Article {
       static attributes = {
         comments: {
           invalid: 'attribute',
@@ -56,11 +56,11 @@ describe('define', () => {
 });
 
 describe('Model', () => {
-  AR.bind(mockStore);
+  bind(mockStore);
 
   describe('#id', () => {
     test('gets the ID from the JSON data', () => {
-      const Article = AR.define('', class Article {});
+      const Article = define('', class Article {});
       const subject = new Article({ id: '5' });
       expect(subject.id).toEqual('5');
     });
@@ -68,14 +68,14 @@ describe('Model', () => {
 
   describe('#type', () => {
     test('gets the static type', () => {
-      const Article = AR.define('bazinga', class Article {});
+      const Article = define('bazinga', class Article {});
       expect(new Article().type).toEqual('bazinga');
     });
   });
 
   describe('endpoints', () => {
     test('default to RESTful endpoints', () => {
-      const Article = AR.define('articles', class Article {});
+      const Article = define('articles', class Article {});
       const subject = new Article({ id: 5 });
 
       expect(subject.endpoint('create')).toEqual('articles');
@@ -85,7 +85,7 @@ describe('Model', () => {
     });
 
     test('has overrideable defaults', () => {
-      const Article = AR.define('articles', class Article {
+      const Article = define('articles', class Article {
         static type = 'articles';
         static attributes = {
           slug: Attr.string()

@@ -1,0 +1,216 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`connect loading error 1`] = `
+<Base
+  dispatch={[Function]}
+  errored={Object {}}
+  hasDelayed={false}
+  hasTimedOut={false}
+  isLoading={true}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect loading error 2`] = `
+<Base
+  dispatch={[Function]}
+  errored={
+    Object {
+      "person": true,
+    }
+  }
+  hasDelayed={false}
+  hasTimedOut={false}
+  isLoading={false}
+  person={[Error: whoops]}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect loading success 1`] = `
+<Base
+  dispatch={[Function]}
+  errored={Object {}}
+  hasDelayed={false}
+  hasTimedOut={false}
+  isLoading={true}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect loading success 2`] = `
+<Base
+  dispatch={[Function]}
+  errored={Object {}}
+  hasDelayed={true}
+  hasTimedOut={false}
+  isLoading={true}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect loading success 3`] = `
+<Base
+  dispatch={[Function]}
+  errored={
+    Object {
+      "person": false,
+    }
+  }
+  hasDelayed={true}
+  hasTimedOut={false}
+  isLoading={false}
+  person={
+    Person {
+      "data": Object {
+        "attributes": Object {
+          "address": Object {
+            "road": "123 Main St",
+          },
+          "first-name": "Dan",
+          "last-name": "Gebhardt",
+          "twitter": "dgeb",
+        },
+        "id": "9",
+        "links": Object {
+          "self": "http://example.com/people/9",
+        },
+        "relationships": Object {
+          "comments": Object {
+            "data": Array [
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+              Object {
+                "id": "12",
+                "type": "comments",
+              },
+            ],
+          },
+        },
+        "type": "people",
+      },
+    }
+  }
+>
+  <div />
+</Base>
+`;
+
+exports[`connect loading timeout 1`] = `
+<Base
+  dispatch={[Function]}
+  errored={Object {}}
+  hasDelayed={false}
+  hasTimedOut={false}
+  isLoading={true}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect loading timeout 2`] = `
+<Base
+  dispatch={[Function]}
+  errored={Object {}}
+  hasDelayed={true}
+  hasTimedOut={false}
+  isLoading={true}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect loading timeout 3`] = `
+<Base
+  dispatch={[Function]}
+  errored={Object {}}
+  hasDelayed={true}
+  hasTimedOut={true}
+  isLoading={true}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect store changed 1`] = `
+<Base
+  dispatch={[Function]}
+  errored={Object {}}
+  hasDelayed={false}
+  hasTimedOut={false}
+  isLoading={true}
+>
+  <div />
+</Base>
+`;
+
+exports[`connect store changed 2`] = `
+<Base
+  dispatch={[Function]}
+  errored={
+    Object {
+      "person": false,
+    }
+  }
+  hasDelayed={false}
+  hasTimedOut={false}
+  isLoading={false}
+  person={
+    Person {
+      "data": Object {
+        "attributes": Object {
+          "address": Object {
+            "road": "123 Main St",
+          },
+          "first-name": "Dan",
+          "last-name": "Gebhardt",
+          "twitter": "dgeb",
+        },
+        "id": "9",
+        "links": Object {
+          "self": "http://example.com/people/9",
+        },
+        "relationships": Object {
+          "comments": Object {
+            "data": Array [
+              Object {
+                "id": "5",
+                "type": "comments",
+              },
+              Object {
+                "id": "12",
+                "type": "comments",
+              },
+            ],
+          },
+        },
+        "type": "people",
+      },
+    }
+  }
+>
+  <div />
+</Base>
+`;
+
+exports[`connect store changed 3`] = `
+<Base
+  dispatch={[Function]}
+  errored={
+    Object {
+      "person": false,
+    }
+  }
+  hasDelayed={true}
+  hasTimedOut={false}
+  isLoading={false}
+>
+  <div />
+</Base>
+`;

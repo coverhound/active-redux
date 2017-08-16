@@ -9,10 +9,10 @@ export const missingStore = () => (
   new Error(`
     Active-Redux has not yet been bound to a store:
 
-    import ActiveRedux from 'active-redux';
+    import { bind } from 'active-redux';
     import myStore from './store';
 
-    ActiveRedux.bind(myStore);
+    bind(myStore);
   `)
 );
 
