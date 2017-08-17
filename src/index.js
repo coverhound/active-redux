@@ -4,15 +4,7 @@ import define from './model';
  * @module active-redux
  */
 
-/**
- * @alias module:active-redux.Attr
- * @see module:active-redux/attributes
- */
 import * as Attr from './attributes';
-/**
- * @alias module:active-redux.api
- * @see module:active-redux/api
- */
 import * as api from './api';
 import connect from './connect';
 
@@ -29,9 +21,17 @@ import connect from './connect';
 const bind = (store) => { Store.bind(store); };
 
 export {
+/**
+ * @alias module:active-redux.Attr
+ * @see module:active-redux/attributes
+ */
   Attr,
   bind,
   define,
   connect,
+/**
+ * @alias module:active-redux.api
+ * @see module:active-redux/api
+ */
   api,
 };

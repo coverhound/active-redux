@@ -23,8 +23,8 @@ const wrappedApiRequest = ({
 });
 
 /**
- * Configure the API -
- * see https://github.com/mzabriskie/axios#request-config
+ * Configure the API
+ * @see {@link https://github.com/mzabriskie/axios#request-config}
  * @function
  * @param {Object} config - Axios configuration
  */
