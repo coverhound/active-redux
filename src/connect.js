@@ -23,7 +23,7 @@ import { connect } from 'react-redux';
  * };
  *
  * export default connect({
- *   articles: () => Article.all()
+ *   articles: (props) => Article.all()
  * })(List);
  * @param {Object.<String, Function>} promises
  * @param {Object} options
@@ -67,7 +67,7 @@ export default (
       this._isMounted = true;
       this._setupDelay();
       this._setupTimeout();
-      this._startPromises();
+      this._startPromises(this.props);
     }
 
     componentWillUnmount() {
@@ -78,11 +78,11 @@ export default (
 
     componentWillReceiveProps(nextProps) {
       if (this.props.resources !== nextProps.resources) {
-        this._startPromises();
+        this._startPromises(nextProps);
       }
     }
 
-    _startPromises() {
+    _startPromises(props) {
       const update = ({ key, data, error = false }) => {
         if (!this._isMounted || this.hasTimedOut) return;
 
@@ -101,7 +101,7 @@ export default (
       };
 
       Object.entries(promises)
-        .forEach(([key, promise]) => promise()
+        .forEach(([key, promise]) => promise(props)
           .then((data) => update({ key, data }))
           .catch((data) => update({ key, data, error: true }))
       );
