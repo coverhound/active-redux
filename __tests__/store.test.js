@@ -24,7 +24,7 @@ describe('Store', () => {
 
   describe('#state', () => {
     test('provides a getter for store dispatch', () => {
-      expect(Store.state).toBe(mockStore.getState().api);
+      expect(Store.state).toBe(mockStore.getState().api.resources);
     });
   });
 

@@ -52,7 +52,7 @@ export const queryData = (entities, query) => (
 );
 
 // Instantiate JSON-API data with its corresponding Model
-const initModel = (Model) => (data) => new Model(data);
+const initModel = (Model) => (data) => data && new Model(data);
 
 class Store {
   bind(store) {
@@ -69,7 +69,7 @@ class Store {
   }
 
   get state() {
-    return this.store.getState().api;
+    return this.store.getState().api.resources;
   }
 
   all({ model } = {}) {
