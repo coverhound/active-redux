@@ -3,7 +3,7 @@
 exports[`connect loading error 1`] = `
 <Base
   dispatch={[Function]}
-  errored={Object {}}
+  error={Object {}}
   hasDelayed={false}
   hasTimedOut={false}
   isLoading={true}
@@ -15,15 +15,14 @@ exports[`connect loading error 1`] = `
 exports[`connect loading error 2`] = `
 <Base
   dispatch={[Function]}
-  errored={
+  error={
     Object {
-      "person": true,
+      "person": [Error: whoops],
     }
   }
   hasDelayed={false}
   hasTimedOut={false}
   isLoading={false}
-  person={[Error: whoops]}
 >
   <div />
 </Base>
@@ -32,7 +31,7 @@ exports[`connect loading error 2`] = `
 exports[`connect loading success 1`] = `
 <Base
   dispatch={[Function]}
-  errored={Object {}}
+  error={Object {}}
   hasDelayed={false}
   hasTimedOut={false}
   isLoading={true}
@@ -44,7 +43,7 @@ exports[`connect loading success 1`] = `
 exports[`connect loading success 2`] = `
 <Base
   dispatch={[Function]}
-  errored={Object {}}
+  error={Object {}}
   hasDelayed={true}
   hasTimedOut={false}
   isLoading={true}
@@ -56,9 +55,9 @@ exports[`connect loading success 2`] = `
 exports[`connect loading success 3`] = `
 <Base
   dispatch={[Function]}
-  errored={
+  error={
     Object {
-      "person": false,
+      "person": undefined,
     }
   }
   hasDelayed={true}
@@ -105,7 +104,7 @@ exports[`connect loading success 3`] = `
 exports[`connect loading timeout 1`] = `
 <Base
   dispatch={[Function]}
-  errored={Object {}}
+  error={Object {}}
   hasDelayed={false}
   hasTimedOut={false}
   isLoading={true}
@@ -117,7 +116,7 @@ exports[`connect loading timeout 1`] = `
 exports[`connect loading timeout 2`] = `
 <Base
   dispatch={[Function]}
-  errored={Object {}}
+  error={Object {}}
   hasDelayed={true}
   hasTimedOut={false}
   isLoading={true}
@@ -129,7 +128,7 @@ exports[`connect loading timeout 2`] = `
 exports[`connect loading timeout 3`] = `
 <Base
   dispatch={[Function]}
-  errored={Object {}}
+  error={Object {}}
   hasDelayed={true}
   hasTimedOut={true}
   isLoading={true}
@@ -141,7 +140,7 @@ exports[`connect loading timeout 3`] = `
 exports[`connect store changed 1`] = `
 <Base
   dispatch={[Function]}
-  errored={Object {}}
+  error={Object {}}
   hasDelayed={false}
   hasTimedOut={false}
   isLoading={true}
@@ -153,9 +152,9 @@ exports[`connect store changed 1`] = `
 exports[`connect store changed 2`] = `
 <Base
   dispatch={[Function]}
-  errored={
+  error={
     Object {
-      "person": false,
+      "person": undefined,
     }
   }
   hasDelayed={false}
@@ -202,9 +201,9 @@ exports[`connect store changed 2`] = `
 exports[`connect store changed 3`] = `
 <Base
   dispatch={[Function]}
-  errored={
+  error={
     Object {
-      "person": false,
+      "person": undefined,
     }
   }
   hasDelayed={true}

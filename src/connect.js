@@ -55,11 +55,8 @@ export default (
         hasTimedOut: false,
         hasDelayed: false,
         responses: {},
-        errored: {},
+        error: {},
       };
-
-      this.promiseCount = Object.keys(promises).length;
-      this.loadedCount = 0;
     }
 
     componentWillMount() {
@@ -78,33 +75,27 @@ export default (
 
     componentWillReceiveProps(nextProps) {
       if (this.props.resources !== nextProps.resources) {
+        this.setState({ isLoading: true });
         this._startPromises(nextProps);
       }
     }
 
+    _update({ key, data, err }) {
+      if (!this._isMounted || this.hasTimedOut) return;
+
+      const responses = Object.assign({}, this.state.responses, { [key]: data });
+      const error = Object.assign({}, this.state.error, { [key]: err });
+
+      this.setState({ responses, error });
+    }
+
     _startPromises(props) {
-      const update = ({ key, data, error = false }) => {
-        if (!this._isMounted || this.hasTimedOut) return;
-
-        this.loadedCount += 1;
-        this.setState({
-          responses: {
-            ...this.state.responses,
-            [key]: data
-          },
-          errored: {
-            ...this.state.errored,
-            [key]: error
-          },
-          isLoading: this.promiseCount > this.loadedCount,
-        });
-      };
-
-      Object.entries(promises)
-        .forEach(([key, promise]) => promise(props)
-          .then((data) => update({ key, data }))
-          .catch((data) => update({ key, data, error: true }))
-      );
+      Promise.all(Object.entries(promises)
+        .map(([key, promise]) => promise(props)
+          .then((data) => this._update({ key, data }))
+          .catch((err) => this._update({ key, err }))
+        )
+      ).then(() => this.setState({ isLoading: false }));
     }
 
     _setupDelay() {
@@ -124,13 +115,13 @@ export default (
     }
 
     render() {
-      const { responses, ...props } = this.state;
-      const { resources, ...theseProps } = this.props;
+      const { responses, ...restState } = this.state;
+      const { resources, ...restProps } = this.props;
       return (
         <WrappedComponent
-          {...props}
+          {...restState}
           {...responses}
-          {...theseProps}
+          {...restProps}
         />
       );
     }

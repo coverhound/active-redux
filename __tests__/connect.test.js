@@ -1,25 +1,22 @@
-import * as AR from 'active-redux';
-import { Provider } from 'react-redux';
 import React from 'react';
-import mockStore from 'fixtures/store';
+import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 
-const Base = () => <div />;
+import * as AR from 'active-redux';
+import mockStore from 'fixtures/store';
 
 AR.bind(mockStore);
+const Base = () => <div />;
 const Person = AR.define('people', class Person {});
-
 const waitFor = (delay) => new Promise((resolve) => {
   setTimeout(resolve, delay);
 });
-
 const findPerson = (delay, error) => () => Promise.all([
   Person.find({ id: '9' }, { remote: false }),
   waitFor(delay),
 ]).then((data) => (
   error ? Promise.reject(error) : data[0]
 ));
-
 const wrap = (Subject) => mount(
   <Provider store={mockStore}><Subject /></Provider>
 ).find(Base);
