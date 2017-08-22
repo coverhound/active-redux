@@ -31,9 +31,9 @@ Here's how you use models:
 
 ```js
 // models/person.js
-import AR, { Attr } from 'active-redux';
+import { Attr, define } from 'active-redux';
 
-const Person = AR.define('people', class Person {
+const Person = define('people', class Person {
   static endpoints = {    // overridable API endpoints - defaults to type
     create: 'people',
     read: 'people',
@@ -58,13 +58,13 @@ const Person = AR.define('people', class Person {
 ```js
 // wherever the store is set
 import { createStore, combineReducers } from 'redux';
-import AR, { reducer: api } from 'active-redux';
+import { api, bind } from 'active-redux';
 import reducers from 'app/reducers';
 
 const store = createStore(
-  combineReducers({ api, ...reducers }),
+  combineReducers({ api: api.reducer, ...reducers }),
 );
-AR.bind(store);
+bind(store);
 ```
 
 This gives models access to the store for querying.

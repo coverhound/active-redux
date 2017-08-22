@@ -1,4 +1,4 @@
-import * as subject from 'active-redux/api';
+import { api as subject } from 'active-redux';
 import * as ActionTypes from 'active-redux/api/constants';
 import { createAction } from 'active-redux/api/utils';
 

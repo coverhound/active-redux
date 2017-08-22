@@ -1,14 +1,14 @@
-import AR from 'active-redux';
+import { bind, define } from 'active-redux';
 import Store from 'active-redux/store';
 import mockStore from 'fixtures/store';
 
 describe('Store', () => {
   beforeEach(() => {
-    AR.bind(mockStore);
+    bind(mockStore);
   });
 
-  const Comment = AR.define('comments', class Comment {});
-  const Person = AR.define('people', class Person {});
+  const Comment = define('comments', class Comment {});
+  const Person = define('people', class Person {});
 
   describe('#store', () => {
     test('is the bound store', () => {
@@ -24,7 +24,7 @@ describe('Store', () => {
 
   describe('#state', () => {
     test('provides a getter for store dispatch', () => {
-      expect(Store.state).toBe(mockStore.getState().api);
+      expect(Store.state).toBe(mockStore.getState().api.resources);
     });
   });
 

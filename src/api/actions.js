@@ -23,8 +23,8 @@ const wrappedApiRequest = ({
 });
 
 /**
- * Configure the API -
- * see https://github.com/mzabriskie/axios#request-config
+ * Configure the API
+ * @see {@link https://github.com/mzabriskie/axios#request-config}
  * @function
  * @param {Object} config - Axios configuration
  */
@@ -35,12 +35,12 @@ export const apiConfigure = createAction(ActionTypes.API_CONFIGURE);
  * @function
  * @private
  * @example
- * import { apiClear } from 'active-redux';
+ * import { api } from 'active-redux';
  *
  * state.api.people
  * // => Object<String: Person>
  *
- * dispatch(apiClear('people'))
+ * dispatch(api.apiClear('people'))
  *
  * state.api.people
  * // => {}
@@ -52,7 +52,7 @@ export const apiClear = createAction(ActionTypes.API_CLEAR);
  * Hydrate the store from JSON-API
  * @function
  * @example
- * import { apiHydrate } from 'active-redux';
+ * import { api } from 'active-redux';
  *
  * state.api.people
  * // => {}
@@ -66,7 +66,7 @@ export const apiClear = createAction(ActionTypes.API_CLEAR);
  *   }
  * }];
  *
- * dispatch(apiHydrate(data))
+ * dispatch(api.apiHydrate(data))
  *
  * state.api.people
  * // => Object<String: Person>
@@ -82,7 +82,7 @@ const apiCreateFailed = createAction(ActionTypes.API_CREATE_FAILED);
  * Create a resource via API
  * @function
  * @example
- * import { apiCreate } from 'active-redux';
+ * import { api } from 'active-redux';
  * import Person from '../models/person';
  *
  * Person.find({ id: '5' });
@@ -90,7 +90,7 @@ const apiCreateFailed = createAction(ActionTypes.API_CREATE_FAILED);
  *
  * const person = new Person({ attributes: { name: 'Joe' } });
  *
- * dispatch(apiCreate({ resource: person })).then((json) => {
+ * dispatch(api.apiCreate({ resource: person })).then((json) => {
  *   // do something with the response json
  * }).catch((error) => {
  *   // handle error
@@ -126,13 +126,13 @@ const apiReadFailed = createAction(ActionTypes.API_READ_FAILED);
  * Read a resource via API
  * @function
  * @example
- * import { apiRead } from 'active-redux';
+ * import { api } from 'active-redux';
  * import Person from '../models/person';
  *
  * Person.all();
  * // => Promise<[]>
  *
- * dispatch(apiRead({ resource: Person })).then((json) => {
+ * dispatch(api.apiRead({ resource: Person })).then((json) => {
  *   // do something with the response json
  * }).catch((error) => {
  *   // handle error
@@ -168,7 +168,7 @@ const apiUpdateFailed = createAction(ActionTypes.API_UPDATE_FAILED);
  * Update a resource via API
  * @function
  * @example
- * import { apiUpdate } from 'active-redux';
+ * import { api } from 'active-redux';
  * import Person from '../models/person';
  *
  * Person.find({ id: '5' });
@@ -176,7 +176,7 @@ const apiUpdateFailed = createAction(ActionTypes.API_UPDATE_FAILED);
  *
  * const person = new Person({ id: '5', attributes: { name: 'Jimmy' } });
  *
- * dispatch(apiUpdate({ resource: person })).then((json) => {
+ * dispatch(api.apiUpdate({ resource: person })).then((json) => {
  *   // do something with the response json
  * }).catch((error) => {
  *   // handle error
@@ -214,7 +214,7 @@ const apiDeleteFailed = createAction(ActionTypes.API_DELETE_FAILED);
  * Delete a resource via API
  * @function
  * @example
- * import { apiDelete } from 'active-redux';
+ * import { api } from 'active-redux';
  * import Person from '../models/person';
  *
  * Person.find({ id: '5' });
@@ -222,7 +222,7 @@ const apiDeleteFailed = createAction(ActionTypes.API_DELETE_FAILED);
  *
  * const person = new Person({ id: '5' });
  *
- * dispatch(apiDelete({ resource: person })).then((json) => {
+ * dispatch(api.apiDelete({ resource: person })).then((json) => {
  *   // do something with the response json
  * }).catch((error) => {
  *   // handle error

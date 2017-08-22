@@ -22,7 +22,21 @@ const initialState = {
 
 /**
  * API Reducer
+ * @function
  * @alias module:active-redux/api.reducer
+ * @example
+ * import { createStore, combineReducers, applyMiddleware } from 'redux';
+ * import { api } from 'active-redux';
+ *
+ * const initialState = {};
+ *
+ * export default createStore(
+ *   combineReducers({ api: api.reducer }),
+ *   initialState,
+ *   applyMiddleware(thunk),
+ * );
+ * @param {Object} state
+ * @param {Object} action
  */
 export default createReducer({
   [Types.API_CONFIGURE]: (state, { payload: apiConfig }) => (
