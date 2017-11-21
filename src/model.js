@@ -101,6 +101,8 @@ export const parseParams = (context, string) => {
 export default function define(type, model = class {}) {
   /**
    * Active Redux Model
+   * @property {String|Number} id JSON-API Resource ID
+   * @property {String} type JSON-API Resource Type
    */
   const Model = class extends model {
 
@@ -112,6 +114,7 @@ export default function define(type, model = class {}) {
 
     /**
     * Attributes of a model, for which methods will be defined
+    * @see {@link module:active-redux/attributes}
     * @example
     * import { Attr, define } from 'active-redux';
     *
@@ -197,21 +200,18 @@ export default function define(type, model = class {}) {
       return this.constructor.endpoint(action, this);
     }
 
+    /**
+     * @param {Object} data JSON-API data
+     */
     constructor(data) {
       super(data);
       this.data = data;
     }
 
-    /**
-     * @return {string} JSON-API Resource ID
-     */
     get id() {
       return this.data.id;
     }
 
-    /**
-     * @return {string} JSON-API Resource Type
-     */
     get type() {
       return this.constructor.type;
     }
