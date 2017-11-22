@@ -1,3 +1,6 @@
+import { createSelector } from 'reselect';
+import { apiIndexAsync, apiIndexClear } from './api';
+
 import Registry from './registry';
 import Store from './store';
 
@@ -17,13 +20,52 @@ const initModel = (Model) => (data) => data && new Model(data);
  */
 const mapModel = (model) => (arr) => arr.map(initModel(model));
 
+const createHash = (type, query) => {
+  if (typeof query === 'string') return `${type}.${query}`;
+
+  return Object.entries(query).reduce((hash, [key, value]) => (
+    `${hash}.${key}=${value}`
+  ), type);
+};
+
+const fromIndex = ({ id, type }) => {
+  const Model = Registry.get(type);
+  return new Model(Store.fromIndex({ id, type }));
+};
+
+const createArraySelector = ({ hash, type }) => createSelector(
+  (state) => state.api.indices[hash],
+  (state) => state.api.resources[type],
+  (index = []) => {
+    const newIndex = index.map(fromIndex);
+    newIndex.isFetching = index.isFetching;
+    return newIndex;
+  },
+);
+
+const createSingleSelector = ({ hash, type }) => createSelector(
+  (state) => state.api.indices[hash],
+  (state) => state.api.resources[type],
+  (index = []) => {
+    const newIndex = index.map(fromIndex);
+    return newIndex[0];
+  },
+);
+
 const newPromise = (promise, mapper) => (
   new Promise((resolve, reject) => promise.then(mapper).then(resolve).catch(reject))
 );
 
-const wrapPromise = ({ array = true, type, promise }) => {
+const wrapPromise = ({ query, array = true, type, promise }) => (dispatch) => {
+  const hash = createHash(type, query);
+  const selectorCreator = array ? createArraySelector : createSingleSelector;
   const mapper = (array ? mapModel : initModel)(Registry.get(type));
   const wrappedPromise = newPromise(promise, mapper);
+
+  wrappedPromise.selector = selectorCreator({ hash, type });
+  wrappedPromise.unsubscribe = () => dispatch(apiIndexClear(hash));
+
+  dispatch(apiIndexAsync({ hash, promise }));
 
   return wrappedPromise;
 };
@@ -42,7 +84,7 @@ export const all = (model) => () => (
     type: model.type,
     array: true,
     promise: Store.all({ model }),
-  })
+  })(Store.store.dispatch)
 );
 
 /**
@@ -62,7 +104,7 @@ export const where = (model) => (query = {}, options = {}) => (
     type: model.type,
     array: true,
     promise: Store.where(query, { model, ...options }),
-  })
+  })(Store.store.dispatch)
 );
 
 /**
@@ -82,7 +124,7 @@ export const find = (model) => (query = {}, options = {}) => (
     type: model.type,
     array: false,
     promise: Store.find(query, { model, ...options }),
-  })
+  })(Store.store.dispatch)
 );
 
 export const hasMany = (model) => (data) => {
@@ -93,7 +135,7 @@ export const hasMany = (model) => (data) => {
     type: model.type,
     array: true,
     promise: Store.where({ id }, { model })
-  });
+  })(Store.store.dispatch);
 };
 
 export const hasOne = (model) => (data) => {
@@ -104,5 +146,5 @@ export const hasOne = (model) => (data) => {
     type: model.type,
     array: false,
     promise: Store.find({ id }, { model })
-  });
+  })(Store.store.dispatch);
 };
