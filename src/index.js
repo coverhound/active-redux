@@ -6,7 +6,6 @@ import define from './model';
 
 import * as Attr from './attributes';
 import * as api from './api';
-import connect from './connect';
 
 /**
   * Registers the store to the model for .where/.find/.all queries
@@ -28,7 +27,6 @@ export {
   Attr,
   bind,
   define,
-  connect,
 /**
  * @alias module:active-redux.api
  * @see module:active-redux/api
