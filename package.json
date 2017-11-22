@@ -5,11 +5,11 @@
   "license": "MIT",
   "scripts": {
     "babel": "babel src --out-dir dist",
-    "build": "rm -rf dist && npm run babel",
+    "dist": "rm -rf dist && npm run babel",
     "dev": "npm run babel -- -w",
     "lint": "eslint src",
     "docs": "jsdoc -c .jsdoc.json",
-    "postinstall": "npm run build",
+    "postinstall": "npm run dist",
     "test": "jest",
     "test:ci": "jest --ci",
     "test:coverage": "jest --coverage",
