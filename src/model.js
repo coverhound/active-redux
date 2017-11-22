@@ -1,6 +1,7 @@
 import './polyfill';
 import Store from './store';
 import Registry from './registry';
+import * as Queries from './queries';
 
 /**
  * @private
@@ -24,18 +25,15 @@ const defineAttribute = (object, field, attribute) => {
  * @private
  */
 const defineRelationship = (object, field, attribute) => {
+  const { isArray, resource } = object.constructor.attributes[field];
+  const model = Registry.get(resource);
+  if (!model) throw new Error(`Unregistered model: ${resource}`);
+  const fetch = (isArray ? Queries.hasMany : Queries.hasOne)(model);
+
   Object.defineProperty(object, field, {
     get() {
-      const { isArray, resource } = this.constructor.attributes[field];
-      const model = Registry.get(resource);
-      if (!model) {
-        throw new Error(`Unregistered model: ${resource}`);
-      }
       const data = this.data.relationships[attribute.name || field].data;
-
-      return isArray
-        ? Store.where({ id: data.map((d) => d.id) }, { model })
-        : Store.find({ id: data.id }, { model });
+      return () => fetch(data);
     }
   });
 };
@@ -147,42 +145,21 @@ export default function define(type, model = class {}) {
 
     /**
     * Gets all of that resource
-    * @example
-    * Person.all()
-    * // => Promise<Array<Person>>
-    * @return {Promise<Array<this>>} Array of model instances
+    * @see {@link module:active-redux/queries.all}
     */
-    static all() {
-      return Store.all({ model: this });
-    }
+    static all = Queries.all(this);
 
     /**
     * Queries the store for that resource
-    * @example
-    * Person.where({ name: "Joe" })
-    * // => Promise<Array<Person>>
-    * @param {Object} query - Query for the store
-    * @param {Object} [options]
-    * @param {boolean} [options.remote] - Call to API if no records found?
-    * @return {Promise<Array<this>>} Array of model instances
+    * @see {@link module:active-redux/queries.where}
     */
-    static where(query = {}, options = {}) {
-      return Store.where(query, { model: this, ...options });
-    }
+    static where = Queries.where(this);
 
     /**
     * Gets one of that resource
-    * @example
-    * Person.find({ id: 5 })
-    * // => Promise<Person>
-    * @param {Object} query - Query for the store
-    * @param {Object} [options]
-    * @param {boolean} [options.remote] - Call to API if no records found?
-    * @return {Promise<(this|null)>} A model instance
+    * @see {@link module:active-redux/queries.find}
     */
-    static find(query = {}, options = {}) {
-      return Store.find(query, { model: this, ...options });
-    }
+    static find = Queries.find(this);
 
     /**
     * Find the endpoint for a specific action

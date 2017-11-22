@@ -30,7 +30,7 @@ describe('define', () => {
     });
 
     const comment = new Comment(comments[0]);
-    expect(await comment.author).toMatchSnapshot();
+    expect(await comment.author()).toMatchSnapshot();
   });
 
   test('defines hasMany methods', async () => {
@@ -41,7 +41,7 @@ describe('define', () => {
     });
 
     const subject = new Person(person);
-    expect(await subject.comments).toMatchSnapshot();
+    expect(await subject.comments()).toMatchSnapshot();
   });
 
   test('should throw if attribute is invalid', () => {
