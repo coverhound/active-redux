@@ -254,3 +254,25 @@ export const apiDelete = ({ resource, endpoint = resource.endpoint('delete') }) 
     });
   }
 );
+
+const apiWillIndex = createAction(ActionTypes.API_WILL_INDEX);
+const apiIndexDone = createAction(ActionTypes.API_INDEX_DONE);
+export const apiIndexClear = createAction(ActionTypes.API_INDEX_CLEAR);
+
+export const apiIndexAsync = ({ hash, promise }) => (dispatch, getState) => {
+  const indexExists = () => getState().api.indices[hash];
+
+  if (indexExists() && indexExists().isFetching) return promise;
+
+  dispatch(apiWillIndex(hash));
+
+  return promise.then((resources) => {
+    if (!indexExists()) return resources;
+    dispatch(apiIndexDone({ hash, resources }));
+    return resources;
+  });
+};
+export const apiIndexSync = ({ hash, resources }) => (dispatch) => {
+  dispatch(apiWillIndex(hash));
+  dispatch(apiIndexDone({ hash, resources }));
+};
