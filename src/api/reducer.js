@@ -14,6 +14,7 @@ import {
 const initialState = {
   resources: {},
   apiConfig: {},
+  indices: {},
   isCreating: 0,
   isReading: 0,
   isUpdating: 0,
@@ -94,4 +95,20 @@ export default createReducer({
   [Types.API_DELETE_FAILED]: (state) => (
     decrementProperty(state, 'isDeleting')
   ),
+
+  [Types.API_WILL_INDEX]: (state, { payload: hash }) => {
+    const index = [];
+    index.isFetching = true;
+    return imm.set(state, ['indices', hash], index);
+  },
+  [Types.API_INDEX_DONE]: (state, { payload: { hash, resources } }) => {
+    const index = resourcesArray(resources.data).map(({ id, type }) => ({ id, type }));
+    index.isFetching = false;
+    return imm.set(state, ['indices', hash], index);
+  },
+  [Types.API_INDEX_CLEAR]: (state, { payload: hash }) => {
+    const index = [];
+    index.isFetching = false;
+    return imm.set(state, ['indices', hash], index);
+  },
 }, initialState);
