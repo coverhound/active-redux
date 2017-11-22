@@ -5,6 +5,7 @@ import reducer from '../../src/api/reducer';
 const initialState = {
   api: {
     apiConfig: {},
+    indices: {},
     resources: {
       people: {
         9: {

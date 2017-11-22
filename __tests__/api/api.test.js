@@ -1,6 +1,7 @@
 import { api as subject } from 'active-redux';
 import * as ActionTypes from 'active-redux/api/constants';
 import { createAction } from 'active-redux/api/utils';
+import mockStore from 'fixtures/store';
 
 describe('reducer', () => {
   const person = {
@@ -14,6 +15,7 @@ describe('reducer', () => {
 
   const fullStore = {
     apiConfig: {},
+    indices: {},
     isCreating: 0,
     isDeleting: 0,
     isReading: 0,
@@ -117,6 +119,62 @@ describe('reducer', () => {
 
       it('removes the resources from the store', () => {
         state = reduce(state, apiDeleteDone({ data: person }));
+        expect(state).toMatchSnapshot();
+      });
+    });
+
+    describe('apiIndexClear()', () => {
+      const hash = 'people.id=5,10';
+      let state = {
+        ...fullStore,
+        indices: {
+          [hash]: [{ id: person.id, type: person.type }],
+        },
+      };
+
+      it('clears the index', async () => {
+        state = reduce(state, subject.apiIndexClear(hash));
+        expect(state.indices).toMatchSnapshot();
+      });
+    });
+
+    describe('apiIndexSync()', () => {
+      const hash = 'people.id=5,10';
+      const store = mockStore;
+      const { dispatch, getState } = store;
+      const resources = { data: person };
+
+      it('creates the index', () => {
+        dispatch(subject.apiIndexSync({ hash, resources }));
+        const state = getState().api.indices;
+        expect(state).toMatchSnapshot();
+      });
+    });
+
+    describe('apiIndexAsync()', () => {
+      const hash = 'people.id=5,10';
+      const store = mockStore;
+      const { dispatch, getState } = store;
+
+      beforeEach(() => {
+        dispatch(subject.apiIndexClear(hash));
+      });
+
+      it('creates the index when the promise resolves', async () => {
+        const promise = Promise.resolve({ data: person });
+        await dispatch(subject.apiIndexAsync({ hash, promise }));
+        const state = getState().api.indices;
+        expect(state).toMatchSnapshot();
+      });
+
+      it('creates the index when the promise is rejected', async () => {
+        const promise = Promise.reject({ data: person });
+        try {
+          await mockStore.dispatch(subject.apiIndexAsync({ hash, promise }));
+        } catch (e) {
+          // nothing
+        }
+        const state = mockStore.getState().api.indices;
         expect(state).toMatchSnapshot();
       });
     });
