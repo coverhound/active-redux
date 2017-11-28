@@ -136,12 +136,33 @@ export const clearResources = (state, data) => {
 export const createAction = (type) => (payload) => ({ type, payload });
 
 /**
- * @param {Object} mappings Reducer handlers per action
- * @param {Object} initialState
+ * @typedef {Object} ReducerFactory
+ * @property {Object} map Action to function mapping
+ * @property {Object} initialState Initial reducer state
+ *
+ * @param {ReducerFactory} base
+ * @param {...ReducerFactory} extensions
  */
-export const createReducer = (mappings, initialState) => (state = initialState, action) => (
-  mappings[action.type] ? mappings[action.type](state, action) : state
-);
+export const createReducer = ({ map, initialState }, ...extensions) => {
+  const extend = (...addedExtensions) => (
+    createReducer({ map, initialState }, ...extensions, ...addedExtensions)
+  );
+
+  const reducerFactory = imm({ map, initialState }).value();
+  extensions.forEach(({ map: m, initialState: i }) => {
+    Object.assign(reducerFactory.map, m);
+    Object.assign(reducerFactory.initialState, i);
+  });
+
+  const reducer = (state = reducerFactory.initialState, action) => {
+    const reduce = reducerFactory.map[action.type];
+    return reduce === undefined ? state : reduce(state, action);
+  };
+
+  reducer.extend = extend;
+
+  return reducer;
+};
 
 /**
  * @param {Object} state

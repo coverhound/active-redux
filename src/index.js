@@ -6,6 +6,9 @@ import define from './model';
 
 import * as Attr from './attributes';
 import * as api from './api';
+import { extension as indexing } from './indexing';
+
+api.reducer = api.reducer.extend(indexing);
 
 /**
   * Registers the store to the model for .where/.find/.all queries
