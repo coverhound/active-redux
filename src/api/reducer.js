@@ -1,9 +1,13 @@
+/**
+ * @module active-redux/api
+ */
+
 import imm from 'object-path-immutable';
 
-import * as Types from './constants';
 import {
+  createAction,
+  apiClient,
   clearResources,
-  createReducer,
   decrementProperty,
   incrementProperty,
   markPendingResources,
@@ -14,7 +18,6 @@ import {
 const initialState = {
   resources: {},
   apiConfig: {},
-  indices: {},
   isCreating: 0,
   isReading: 0,
   isUpdating: 0,
@@ -22,93 +25,338 @@ const initialState = {
 };
 
 /**
- * API Reducer
+ * Action constants
+ */
+const API_CONFIGURE = 'AR_API_CONFIGURE';
+const API_CLEAR = 'AR_API_CLEAR';
+const API_HYDRATE = 'API_HYDRATE';
+
+const API_WILL_READ = 'AR_API_WILL_READ';
+const API_READ_DONE = 'AR_API_READ_DONE';
+const API_READ_FAILED = 'AR_API_READ_FAILED';
+
+const API_WILL_CREATE = 'AR_API_WILL_CREATE';
+const API_CREATE_DONE = 'AR_API_CREATE_DONE';
+const API_CREATE_FAILED = 'AR_API_CREATE_FAILED';
+
+const API_WILL_UPDATE = 'AR_API_WILL_UPDATE';
+const API_UPDATE_DONE = 'AR_API_UPDATE_DONE';
+const API_UPDATE_FAILED = 'AR_API_UPDATE_FAILED';
+
+const API_WILL_DELETE = 'AR_API_WILL_DELETE';
+const API_DELETE_DONE = 'AR_API_DELETE_DONE';
+const API_DELETE_FAILED = 'AR_API_DELETE_FAILED';
+
+/**
+ * Actions
+ */
+const wrappedApiRequest = ({
+  resource,
+  options,
+  endpoint,
+  dispatch,
+  success,
+  failure,
+}) => apiClient(endpoint, options).then((json) => {
+  dispatch(success(json));
+  return Promise.resolve(json);
+}).catch((error) => {
+  const err = error;
+  err.resource = resource;
+
+  dispatch(failure(err));
+  return Promise.reject(err);
+});
+
+/**
+ * Configure the API
+ * @see {@link https://github.com/mzabriskie/axios#request-config}
  * @function
- * @alias module:active-redux/api.reducer
+ * @param {Object} config - Axios configuration
+ */
+export const apiConfigure = createAction(API_CONFIGURE);
+
+/**
+ * Clear an entity from the store
+ * @function
+ * @private
  * @example
- * import { createStore, combineReducers, applyMiddleware } from 'redux';
  * import { api } from 'active-redux';
  *
- * const initialState = {};
+ * state.api.people
+ * // => Object<String: Person>
  *
- * export default createStore(
- *   combineReducers({ api: api.reducer }),
- *   initialState,
- *   applyMiddleware(thunk),
- * );
- * @param {Object} state
- * @param {Object} action
+ * dispatch(api.apiClear('people'))
+ *
+ * state.api.people
+ * // => {}
+ * @param {Object} data - JSON-API data
  */
-export default createReducer({
-  [Types.API_CONFIGURE]: (state, { payload: apiConfig }) => (
+export const apiClear = createAction(API_CLEAR);
+
+/**
+ * Hydrate the store from JSON-API
+ * @function
+ * @example
+ * import { api } from 'active-redux';
+ *
+ * state.api.people
+ * // => {}
+ *
+ * const data = [{
+ *   type: 'people',
+ *   id: '5',
+ *   attributes: {
+ *     name: 'Joe',
+ *     age: 35,
+ *   }
+ * }];
+ *
+ * dispatch(api.apiHydrate(data))
+ *
+ * state.api.people
+ * // => Object<String: Person>
+ * @param {Object} data - JSON-API data
+ */
+export const apiHydrate = createAction(API_HYDRATE);
+
+const apiWillCreate = createAction(API_WILL_CREATE);
+const apiCreateDone = createAction(API_CREATE_DONE);
+const apiCreateFailed = createAction(API_CREATE_FAILED);
+
+/**
+ * Create a resource via API
+ * @function
+ * @example
+ * import { api } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<null>
+ *
+ * const person = new Person({ attributes: { name: 'Joe' } });
+ *
+ * dispatch(api.apiCreate({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person>
+ * @param {Object} args
+ * @param {define~Model} args.resource
+ * @param {string} [args.endpoint]
+ */
+export const apiCreate = ({ resource, endpoint = resource.endpoint('create') }) => (dispatch, getState) => {
+  dispatch(apiWillCreate(resource));
+  return wrappedApiRequest({
+    resource,
+    options: {
+      ...getState().api.apiConfig,
+      method: 'POST',
+      data: { data: resource }
+    },
+    endpoint,
+    dispatch,
+    success: apiCreateDone,
+    failure: apiCreateFailed,
+  });
+};
+
+const apiWillRead = createAction(API_WILL_READ);
+const apiReadDone = createAction(API_READ_DONE);
+const apiReadFailed = createAction(API_READ_FAILED);
+
+/**
+ * Read a resource via API
+ * @function
+ * @example
+ * import { api } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.all();
+ * // => Promise<[]>
+ *
+ * dispatch(api.apiRead({ resource: Person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.all();
+ * // => Promise<Array<Person>>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ */
+export const apiRead = ({ resource, endpoint = resource.endpoint('read') }) => (dispatch, getState) => {
+  dispatch(apiWillRead(resource));
+  return wrappedApiRequest({
+    resource,
+    options: {
+      ...getState().api.apiConfig,
+      method: 'GET',
+      data: { data: resource }
+    },
+    endpoint,
+    dispatch,
+    success: apiReadDone,
+    failure: apiReadFailed,
+  });
+};
+
+const apiWillUpdate = createAction(API_WILL_UPDATE);
+const apiUpdateDone = createAction(API_UPDATE_DONE);
+const apiUpdateFailed = createAction(API_UPDATE_FAILED);
+
+/**
+ * Update a resource via API
+ * @function
+ * @example
+ * import { api } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person(id='5' name='Joe')>
+ *
+ * const person = new Person({ id: '5', attributes: { name: 'Jimmy' } });
+ *
+ * dispatch(api.apiUpdate({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person(id='5' name='Jimmy')>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ */
+export const apiUpdate = ({ resource, endpoint = resource.endpoint('update') }) => (
+  (dispatch, getState) => {
+    dispatch(apiWillUpdate(resource));
+    return wrappedApiRequest({
+      resource,
+      options: {
+        ...getState().api.apiConfig,
+        method: 'PATCH',
+        data: { data: resource }
+      },
+      endpoint,
+      dispatch,
+      success: apiUpdateDone,
+      failure: apiUpdateFailed,
+    });
+  }
+);
+
+const apiWillDelete = createAction(API_WILL_DELETE);
+const apiDeleteDone = createAction(API_DELETE_DONE);
+const apiDeleteFailed = createAction(API_DELETE_FAILED);
+
+/**
+ * Delete a resource via API
+ * @function
+ * @example
+ * import { api } from 'active-redux';
+ * import Person from '../models/person';
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<Person(id='5')>
+ *
+ * const person = new Person({ id: '5' });
+ *
+ * dispatch(api.apiDelete({ resource: person })).then((json) => {
+ *   // do something with the response json
+ * }).catch((error) => {
+ *   // handle error
+ * });
+ *
+ * Person.find({ id: '5' });
+ * // => Promise<null>
+ * @param {Object} args
+ * @param {Model} args.resource
+ * @param {string} [args.endpoint]
+ */
+export const apiDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
+  (dispatch, getState) => {
+    const options = {
+      ...getState().api.apiConfig,
+      method: 'DELETE',
+    };
+
+    dispatch(apiWillDelete(resource));
+    return apiClient(endpoint, options).then((json) => {
+      dispatch(apiDeleteDone(resource));
+      return Promise.resolve(json);
+    }).catch((error) => {
+      const err = error;
+      err.resource = resource;
+
+      dispatch(apiDeleteFailed(err));
+      return Promise.reject(err);
+    });
+  }
+);
+
+const map = {
+  [API_CONFIGURE]: (state, { payload: apiConfig }) => (
     imm(state).set('apiConfig', apiConfig).value()
   ),
-  [Types.API_CLEAR]: (state, { payload: type }) => (
+  [API_CLEAR]: (state, { payload: type }) => (
     clearResources(state, type)
   ),
-  [Types.API_HYDRATE]: (state, { payload: resources }) => (
+  [API_HYDRATE]: (state, { payload: resources }) => (
     mergeResources(state, resources)
   ),
 
-  [Types.API_WILL_CREATE]: (state) => (
+  [API_WILL_CREATE]: (state) => (
     incrementProperty(state, 'isCreating')
   ),
-  [Types.API_CREATE_DONE]: (state, { payload: resources }) => {
+  [API_CREATE_DONE]: (state, { payload: resources }) => {
     const newState = mergeResources(state, resources);
     return decrementProperty(newState, 'isCreating');
   },
-  [Types.API_CREATE_FAILED]: (state) => (
+  [API_CREATE_FAILED]: (state) => (
     decrementProperty(state, 'isCreating')
   ),
 
-  [Types.API_WILL_READ]: (state) => (
+  [API_WILL_READ]: (state) => (
     incrementProperty(state, 'isReading')
   ),
-  [Types.API_READ_DONE]: (state, { payload: resources }) => {
+  [API_READ_DONE]: (state, { payload: resources }) => {
     const newState = mergeResources(state, resources);
     return decrementProperty(newState, 'isReading');
   },
-  [Types.API_READ_FAILED]: (state) => (
+  [API_READ_FAILED]: (state) => (
     decrementProperty(state, 'isReading')
   ),
 
-  [Types.API_WILL_UPDATE]: (state, { payload: resources }) => {
+  [API_WILL_UPDATE]: (state, { payload: resources }) => {
     const newState = incrementProperty(state, 'isUpdating');
     return markPendingResources(newState, resources);
   },
-  [Types.API_UPDATE_DONE]: (state, { payload: resources }) => {
+  [API_UPDATE_DONE]: (state, { payload: resources }) => {
     const newState = mergeResources(state, resources);
     return decrementProperty(newState, 'isUpdating');
   },
-  [Types.API_UPDATE_FAILED]: (state) => (
+  [API_UPDATE_FAILED]: (state) => (
     decrementProperty(state, 'isUpdating')
   ),
 
-  [Types.API_WILL_DELETE]: (state, { payload: resources }) => {
+  [API_WILL_DELETE]: (state, { payload: resources }) => {
     const newState = incrementProperty(state, 'isDeleting');
     return markPendingResources(newState, resources);
   },
-  [Types.API_DELETE_DONE]: (state, { payload: resources }) => {
+  [API_DELETE_DONE]: (state, { payload: resources }) => {
     const newState = clearResources(state, resourcesArray(resources.data));
     return decrementProperty(newState, 'isDeleting');
   },
-  [Types.API_DELETE_FAILED]: (state) => (
+  [API_DELETE_FAILED]: (state) => (
     decrementProperty(state, 'isDeleting')
   ),
+};
 
-  [Types.API_WILL_INDEX]: (state, { payload: hash }) => {
-    const index = [];
-    index.isFetching = true;
-    return imm.set(state, ['indices', hash], index);
-  },
-  [Types.API_INDEX_DONE]: (state, { payload: { hash, resources } }) => {
-    const index = resourcesArray(resources.data).map(({ id, type }) => ({ id, type }));
-    index.isFetching = false;
-    return imm.set(state, ['indices', hash], index);
-  },
-  [Types.API_INDEX_CLEAR]: (state, { payload: hash }) => {
-    const index = [];
-    index.isFetching = false;
-    return imm.set(state, ['indices', hash], index);
-  },
-}, initialState);
+export default { initialState, map };
