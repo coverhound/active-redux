@@ -1,11 +1,16 @@
+import { createSelector } from 'reselect';
 import './polyfill';
-import { remoteRead } from './api';
+import { apiRead } from './api';
+import { apiIndexAsync, queryEndpoint } from './indexing';
 
 /**
  * @module
  * @private
+ *
+ * @typedef {Promise} RecordPromise
+ * @property {Selector} selector
  */
-export const missingStore = () => (
+const missingStore = () => (
   new Error(`
     Active-Redux has not yet been bound to a store:
 
@@ -16,40 +21,14 @@ export const missingStore = () => (
   `)
 );
 
-// Used for querying the store #where / #find
-const deepPartialEqual = (obj1, obj2) => (
-  Object.entries(obj1).reduce((equal, [key, value]) => {
-    if (equal === false) return equal;
-    if (obj2 === undefined) return false;
+const toModel = (Model) => (data = null) => (data ? new Model(data) : data);
+const mapToModel = (Model) => (data) => data.map((item) => toModel(Model)(item));
 
-    if (typeof value === 'object' && !Array.isArray(value)) {
-      return deepPartialEqual(value, obj2[key]);
-    }
-
-    if (value !== obj2[key]) return false;
-
-    return equal;
-  }, true)
-);
-
-// Query through an array of objects
-export const queryData = (entities, query) => (
-  entities.filter((entity) => (
-    Object.entries(query).reduce((match, [queryKey, queryValue]) => {
-      if (match === false) return match;
-
-      const entityValue = entity[queryKey];
-
-      if (Array.isArray(queryValue)) {
-        return queryValue.includes(entityValue);
-      }
-      if (typeof queryValue === 'object') {
-        return deepPartialEqual(queryValue, entityValue);
-      }
-      return queryValue === entityValue;
-    }, true)
-  ))
-);
+const createRecordPromise = ({ promise, selector, store }) => {
+  const recordPromise = promise.then(() => selector(store.getState()));
+  recordPromise.selector = selector;
+  return recordPromise;
+};
 
 class Store {
   bind(store) {
@@ -69,39 +48,58 @@ class Store {
     return this.store.getState().api.resources;
   }
 
-  all({ model } = {}) {
-    return Promise.resolve(Object.values(this.state[model.type]));
+  peek(id, { model } = {}) {
+    return toModel(model)(this.state[model.type][id]);
   }
 
-  where(query, { remote = true, model } = {}) {
-    const local = queryData(Object.values(this.state[model.type]), query);
-    if (local.length > 0 || remote === false) {
-      return Promise.resolve(local);
-    }
+  /**
+   * @param {String|Number} id
+   * @param {Object} options
+   * @param {Model} options.model
+   * @returns {RecordPromise<Model|null>}
+   */
+  find(id, { model } = {}) {
+    const endpoint = `${model.endpoint('read')}/${id}`;
+    const promise = this.dispatch(apiRead({ resource: model, endpoint }));
+    const mapper = toModel(model);
+    const selector = createSelector(
+      (state) => state.api.resources[model.type],
+      (resources = {}) => mapper(resources[id]),
+    );
 
-    return this.dispatch(remoteRead({ resource: model, query }))
-      .then(() => this.where(query, { remote: false, model }));
+    return createRecordPromise({ promise, selector, store: this.store });
   }
 
-  fromIndex({ id, type }) {
-    return this.state[type][id];
+  peekAll({ model } = {}) {
+    return mapToModel(model)(Object.values(this.state[model.type]));
   }
 
-  findById(id, { remote = true, model } = {}) {
-    const local = this.fromIndex({ id, type: model.type });
-    if (local || remote === false) {
-      return Promise.resolve(local);
-    }
+  findAll({ model } = {}) {
+    const promise = this.dispatch(apiRead({ resource: model }));
+    const mapper = mapToModel(model);
+    const selector = createSelector(
+      (state) => state.api.resources[model.type],
+      (resources = {}) => mapper(Object.values(resources)),
+    );
 
-    const endpoint = `${this.endpoint('read')}/${id}`;
-
-    return this.dispatch(remoteRead({ resource: model, endpoint }))
-      .then(() => this.findById(id, { remote: false, model }));
+    return createRecordPromise({ promise, selector, store: this.store });
   }
 
-  find({ id, ...query }, { remote = true, model } = {}) {
-    if (id) return this.findById(id, { remote, model });
-    return this.where(query, { remote, model }).then((results) => results[0]);
+  query(query, { model } = {}) {
+    const endpoint = queryEndpoint(model.endpoint('read'), query);
+    const promise = this.dispatch(apiRead({ resource: model, endpoint })).then(({ data }) => data);
+    this.dispatch(apiIndexAsync({ hash: endpoint, promise }));
+    const selector = createSelector(
+      (state) => state.api.indices[endpoint],
+      (state) => state.api.resources[model.type],
+      (index = []) => {
+        const results = index.map((item) => this.peek(item.id, { model }));
+        results.isFetching = index.isFetching;
+        return results;
+      }
+    );
+
+    return createRecordPromise({ promise, selector, store: this.store });
   }
 }
 

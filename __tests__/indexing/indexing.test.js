@@ -16,35 +16,56 @@ describe('reducer', () => {
     store = createMockStore();
   });
 
-  describe('apiIndexClear()', () => {
-    const hash = 'people.id=5,10';
+  const toArray = (arr) => arr.map((e) => e);
+  const indexedPeople = [{ id: person.id, type: person.type }];
+  const hash = 'people.id=5,10';
+  const indexState = () => store.getState().api.indices[hash];
 
+  describe('apiIndexClear()', () => {
     it('clears the index', () => {
       store.dispatch(subject.apiIndexClear(hash));
-      expect(store.getState().api.indices).toMatchSnapshot();
+      const index = indexState();
+
+      expect(toArray(index)).toEqual([]);
+      expect(index.isFetching).toBe(false);
+      expect(index.hash).toBe(hash);
     });
   });
 
   describe('apiIndexSync()', () => {
-    const hash = 'people.id=5,10';
-
     it('creates the index', () => {
-      store.dispatch(subject.apiIndexSync({ hash, resources: person }));
-      expect(store.getState().api.indices).toMatchSnapshot();
+      store.dispatch(subject.apiIndexSync({ hash, data: person }));
+      const index = indexState();
+
+      expect(toArray(index)).toEqual(indexedPeople);
+      expect(index.isFetching).toBe(false);
+      expect(index.hash).toBe(hash);
     });
   });
 
   describe('apiIndexAsync()', () => {
-    const hash = 'people.id=5,10';
-
     beforeEach(() => {
       store.dispatch(subject.apiIndexClear(hash));
+    });
+
+    it('is fetching while waiting for the promise to resolve', () => {
+      const promise = new Promise(() => {});
+      store.dispatch(subject.apiIndexAsync({ hash, promise }));
+      const index = indexState();
+
+      expect(toArray(index)).toEqual([]);
+      expect(index.isFetching).toBe(true);
+      expect(index.hash).toBe(hash);
     });
 
     it('creates the index when the promise resolves', async () => {
       const promise = Promise.resolve(person);
       await store.dispatch(subject.apiIndexAsync({ hash, promise }));
-      expect(store.getState().api.indices).toMatchSnapshot();
+      const index = indexState();
+
+      expect(toArray(index)).toEqual(indexedPeople);
+      expect(index.isFetching).toBe(false);
+      expect(index.hash).toBe(hash);
     });
 
     it('creates the index when the promise is rejected', async () => {
@@ -54,8 +75,11 @@ describe('reducer', () => {
       } catch (e) {
         // nothing
       }
-      const state = store.getState().api.indices;
-      expect(state).toMatchSnapshot();
+      const index = indexState();
+
+      expect(toArray(index)).toEqual([]);
+      expect(index.isFetching).toBe(false);
+      expect(index.hash).toBe(hash);
     });
   });
 });
