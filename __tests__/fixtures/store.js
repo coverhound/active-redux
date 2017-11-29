@@ -83,7 +83,7 @@ const initialState = {
   }
 };
 
-export default createStore(
+export default () => createStore(
   combineReducers({ api: reducer }),
   initialState,
   applyMiddleware(thunk),

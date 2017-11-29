@@ -66,6 +66,8 @@ export const createReverseRelationships = (state, newState, { id, type, relation
     const children = resourcesArray(data);
     const childModel = Registry.get(children[0].type);
     const childData = { type, id };
+    if (!childModel.relationships[type]) return;
+
     const { key, isArray } = childModel.relationships[type];
 
     children.forEach(({ type: relType, id: relId }) => {
@@ -95,9 +97,10 @@ export const mergeResources = (state, { data, included = [] }) => {
   const newState = imm(state);
 
   resourcesArray(data).concat(included).forEach((dataObj) => {
+    const { id, type } = dataObj;
     // if we don't do this and the ID is a number, it'll create an array
-    newState.set(['resources', dataObj.type], state[dataObj.type] || {});
-    newState.set(['resources', dataObj.type, dataObj.id], dataObj);
+    if (!getProperty(state, 'resources', type)) newState.set(['resources', type], {});
+    newState.set(['resources', type, id], dataObj);
     createReverseRelationships(state, newState, dataObj);
   });
 

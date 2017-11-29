@@ -1,9 +1,15 @@
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+
 import { Attr, bind, define } from 'active-redux';
 import jsonApiData from 'fixtures/json-api-body';
-import mockStore from 'fixtures/store';
+import createMockStore from 'fixtures/store';
 
+const mockStore = createMockStore();
 const article = jsonApiData.data[0];
 const [person, ...comments] = jsonApiData.included;
+const mockAxios = new MockAdapter(axios);
+const httpHeaders = { 'content-type': 'application/json' };
 
 describe('define', () => {
   test('sets the type', () => {
@@ -29,8 +35,10 @@ describe('define', () => {
       };
     });
 
+    mockAxios.onGet(`people/${person.id}`).replyOnce(200, { data: person }, httpHeaders);
     const comment = new Comment(comments[0]);
-    expect(await comment.author()).toMatchSnapshot();
+    const result = await comment.author();
+    expect(result).toMatchSnapshot();
   });
 
   test('defines hasMany methods', async () => {
@@ -40,8 +48,11 @@ describe('define', () => {
       }
     });
 
+    mockAxios.onGet(`comments/${comments[0].id}`).replyOnce(200, { data: comments[0] }, httpHeaders);
+    mockAxios.onGet(`comments/${comments[1].id}`).replyOnce(200, { data: comments[1] }, httpHeaders);
     const subject = new Person(person);
-    expect(await subject.comments()).toMatchSnapshot();
+    const result = await subject.comments();
+    expect(result).toMatchSnapshot();
   });
 
   test('should throw if attribute is invalid', () => {

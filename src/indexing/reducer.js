@@ -2,6 +2,22 @@ import imm from 'object-path-immutable';
 import { createAction, resourcesArray } from '../api/utils';
 
 /**
+ * Helpers
+ */
+class Index extends Array {
+  constructor({ hash, isFetching = false }, ...args) {
+    super(...args);
+    this.hash = hash;
+    this.isFetching = isFetching;
+  }
+}
+
+const indexArray = (options, data) => new Index(
+  options,
+  ...resourcesArray(data).map(({ id, type }) => ({ id, type })),
+);
+
+/**
  * Action Names
  */
 const API_WILL_INDEX = 'AR_API_WILL_INDEX';
@@ -22,15 +38,17 @@ export const apiIndexAsync = ({ hash, promise }) => (dispatch, getState) => {
 
   dispatch(apiWillIndex(hash));
 
-  return promise.then((resources) => {
-    if (!indexExists()) return resources;
-    dispatch(apiIndexDone({ hash, resources }));
-    return resources;
+  return promise.then((data) => {
+    if (indexExists()) dispatch(apiIndexDone({ hash, data }));
+    return data;
+  }).catch((err) => {
+    dispatch(apiIndexDone({ hash, data: [] }));
+    return Promise.reject(err);
   });
 };
-export const apiIndexSync = ({ hash, resources }) => (dispatch) => {
+export const apiIndexSync = ({ hash, data }) => (dispatch) => {
   dispatch(apiWillIndex(hash));
-  dispatch(apiIndexDone({ hash, resources }));
+  dispatch(apiIndexDone({ hash, data }));
 };
 
 const initialState = {
@@ -38,21 +56,15 @@ const initialState = {
 };
 
 const map = {
-  [API_WILL_INDEX]: (state, { payload: hash }) => {
-    const index = [];
-    index.isFetching = true;
-    return imm.set(state, ['indices', hash], index);
-  },
-  [API_INDEX_DONE]: (state, { payload: { hash, resources: resourceArray } }) => {
-    const index = resourcesArray(resourceArray).map(({ id, type }) => ({ id, type }));
-    index.isFetching = false;
-    return imm.set(state, ['indices', hash], index);
-  },
-  [API_INDEX_CLEAR]: (state, { payload: hash }) => {
-    const index = [];
-    index.isFetching = false;
-    return imm.set(state, ['indices', hash], index);
-  },
+  [API_WILL_INDEX]: (state, { payload: hash, data = state.indices[hash] || [] }) => (
+    imm.set(state, ['indices', hash], indexArray({ isFetching: true, hash }, data))
+  ),
+  [API_INDEX_DONE]: (state, { payload: { hash, data } }) => (
+    imm.set(state, ['indices', hash], indexArray({ hash }, data))
+  ),
+  [API_INDEX_CLEAR]: (state, { payload: hash }) => (
+    imm.set(state, ['indices', hash], indexArray({ hash }, []))
+  ),
 };
 
 /**
