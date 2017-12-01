@@ -1,0 +1,18 @@
+{
+  "data": {
+    "type": "people",
+    "id": "7",
+    "attributes": {
+      "name": "Aiden Collins",
+      "occupation": "Professional Troll"
+    },
+    "relationships": {
+      "comments": {
+        "data": [
+          { "type": "comments", "id": "15" },
+          { "type": "comments", "id": "17" }
+        ]
+      }
+    }
+  }
+}

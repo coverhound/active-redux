@@ -1,0 +1,23 @@
+{
+  "data": {
+    "type": "people",
+    "id": "5",
+    "attributes": {
+      "name": "Marquetta Kinslow",
+      "occupation": "CEO"
+    },
+    "relationships": {
+      "posts": {
+        "data": [
+          { "type": "articles", "id": "1" },
+          { "type": "articles", "id": "2" }
+        ]
+      },
+      "comments": {
+        "data": [
+          { "type": "comments", "id": "16" }
+        ]
+      }
+    }
+  }
+}

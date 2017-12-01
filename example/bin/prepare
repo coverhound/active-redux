@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+DIR=$(cd $(dirname $0) && pwd -P)
+
+cd "$(dirname $0)"
+yarn install
+
+cd "../"
+yarn install && yarn dist
+ln -sf dist example/nodes_modules/active-redux
