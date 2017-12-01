@@ -7,12 +7,17 @@ cache:
   directories:
   - ".eslintcache"
   - node_modules
-branches:
-  only:
-    - master
 script:
 - yarn run test:ci
-after_success: ./docs.sh
+after_success: "./docs.sh"
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
+after_script:
+- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
 env:
   global:
-    secure: 0PrqfeItPhnO2OhiLAxB+BEgqiR7shvRtulZbXZ1bDEmujk09UVvDeNIzqHO1qT5X0pIdLDiXgXE+2h6105hTqeQlQxKHdVKd5XvjRXhHEN3KwyCs8UnWoSf0Z7i7/Tn32O+YnkCsWhYCFnQ6vrk9j3b8T8K30AiCG5mVBwoyajpa+nOCkwBpe9/EwbI8AGjraVX08OX5lovKLqkoTkSoQ/I1+Bh4yDCfkm1MUVq3aOuTGisAEnPawGR+W4QElHEO8K5ONAP5dts5F129IiNFwLUv+jvSi3hlvtzoO+e6dEzZrtNznFlQSaAWen71n8Oz0vyGAgcPGo1GesAoTTixvp6gh5joYWJ38hoo9biH93O8eErMrQrWX+lWqv6QzaJu/CqI6afn4mmY12PZwaA3x1u6sLF6cB0OlAHDof0Uxf/ORZfX4OCkAyWddPRJu+irMrtLUk8J5p3zr8hnDuUjP6SRfK/9lz+eceznkN+RadDt/PeQUGyLaLth38NxnRMBePnzey1LXcVQh6BMYvP5P5oNq8777CQCMxfR+46C2Xnv148kRSOh2P01DndRLd/9oApX+9/B0GJjG3FkNwoafcTFmqOzK7uVoPdZgMe0u+Vx+B+UtfNVfAML7BsZZCsCNFI5TlExWq0rQ6Z4wISL85Q8UL8iM/ivgrCmjpV+YQ=
+  - secure: 0PrqfeItPhnO2OhiLAxB+BEgqiR7shvRtulZbXZ1bDEmujk09UVvDeNIzqHO1qT5X0pIdLDiXgXE+2h6105hTqeQlQxKHdVKd5XvjRXhHEN3KwyCs8UnWoSf0Z7i7/Tn32O+YnkCsWhYCFnQ6vrk9j3b8T8K30AiCG5mVBwoyajpa+nOCkwBpe9/EwbI8AGjraVX08OX5lovKLqkoTkSoQ/I1+Bh4yDCfkm1MUVq3aOuTGisAEnPawGR+W4QElHEO8K5ONAP5dts5F129IiNFwLUv+jvSi3hlvtzoO+e6dEzZrtNznFlQSaAWen71n8Oz0vyGAgcPGo1GesAoTTixvp6gh5joYWJ38hoo9biH93O8eErMrQrWX+lWqv6QzaJu/CqI6afn4mmY12PZwaA3x1u6sLF6cB0OlAHDof0Uxf/ORZfX4OCkAyWddPRJu+irMrtLUk8J5p3zr8hnDuUjP6SRfK/9lz+eceznkN+RadDt/PeQUGyLaLth38NxnRMBePnzey1LXcVQh6BMYvP5P5oNq8777CQCMxfR+46C2Xnv148kRSOh2P01DndRLd/9oApX+9/B0GJjG3FkNwoafcTFmqOzK7uVoPdZgMe0u+Vx+B+UtfNVfAML7BsZZCsCNFI5TlExWq0rQ6Z4wISL85Q8UL8iM/ivgrCmjpV+YQ=
+  - secure: clAMCjkBQGvC2ak/+y1iuqqwVRnLP9QK1He+CiUrHfSNFhQu9YaAKq5/eTYW4RnB+ILUX5I2kbsVUqlLHgjlH2i1HX8FgFEdOmvTaGaiZtd3EuysWufvivAY9bJiq3q6ORYZ/nVKS8Vx7932qSXmvi0KsPoUZMoB6HVLVJIQkJlRFgj3Fep5+w1PawoO9TlSK+74bz2/1JUeAWDZSXrOA7Ooo4xaHDpYZEWJUpbBaEzYH8BzWqlLx/81qAIbhtK9zVVn6mn0uGmB2Cj4LPvBwrwH/MOsgPiZHOjnG0BRvrj9ZwZJtmCk821nCOlmsfQf7oCaxFJf1wKHjKz2raaYw4a3MlR35JGud4A3S8Dqq4DUQImBPOoYX2Vo1de/ZqV1uBaY+PO/5KA82J6FSgyK2SngoyTdNQwWw6O8PEQQGjCTPjqpDeCqYBFxwXdBMsmed13JprStTRCC+njp0LfkU46w3sQB7F2PHzXPOyiNgnQYdkilWCQjQkxLQ3GebyaxMXFiYj21LY55/gDhKSi3Q9MD4YsB3fH/P12Z7wQc3MSyRwdVdCKnE13AIT5I+uQk8ozZ946Fa3JM8woAI7NvAnGpr5XH/MTHZNURx+WIfBlhPsXgoRHwD82b7kvxQEMJzYsYUEomPsXGCRKiSTWMygseB0M1+Llqbr8i7n33EfE=

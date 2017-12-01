@@ -1,0 +1,26 @@
+---
+prepare:
+  fetch:
+  - url: "https://rawgit.com/coverhound/coverhound-style/master/eslint/index.js"
+    path: ".eslintrc.js"
+engines:
+  eslint:
+    enabled: true
+    channel: "eslint-3"
+    config:
+      config: ".eslintrc.js"
+    checks:
+      import/no-unresolved:
+        enabled: false
+      import/extensions:
+        enabled: false
+      import/no-extraneous-dependencies:
+        enabled: false
+  fixme:
+    enabled: true
+ratings:
+  paths:
+  - "**.js"
+  - "**.jsx"
+exclude_paths:
+- dist
