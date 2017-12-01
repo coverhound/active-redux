@@ -30,15 +30,16 @@ describe('define', () => {
   test('defines hasOne methods', async () => {
     define('people', class Person {});
     const Comment = define('comments', class Comment {
-      static attributes = {
-        author: Attr.hasOne('people'),
-      };
+      static attributes = { author: Attr.hasOne('people') };
     });
-
     mockAxios.onGet(`people/${person.id}`).replyOnce(200, { data: person }, httpHeaders);
-    const comment = new Comment(comments[0]);
-    const result = await comment.author();
-    expect(result).toMatchSnapshot();
+
+    const subject = new Comment(comments[0]);
+    const result1 = subject.author;
+    const result2 = await subject.fetchAuthor();
+
+    expect(JSON.stringify(result1)).toEqual(JSON.stringify(result2));
+    expect(result2).toMatchSnapshot();
   });
 
   test('defines hasMany methods', async () => {
@@ -47,12 +48,15 @@ describe('define', () => {
         comments: Attr.hasMany('comments'),
       }
     });
-
     mockAxios.onGet(`comments/${comments[0].id}`).replyOnce(200, { data: comments[0] }, httpHeaders);
     mockAxios.onGet(`comments/${comments[1].id}`).replyOnce(200, { data: comments[1] }, httpHeaders);
+
     const subject = new Person(person);
-    const result = await subject.comments();
-    expect(result).toMatchSnapshot();
+    const result1 = await subject.comments;
+    const result2 = await subject.fetchComments();
+
+    expect(JSON.stringify(result1)).toEqual(JSON.stringify(result2));
+    expect(result2).toMatchSnapshot();
   });
 
   test('should throw if attribute is invalid', () => {
