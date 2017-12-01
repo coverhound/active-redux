@@ -1,8 +1,4 @@
-import { createSelector } from 'reselect';
 import './polyfill';
-import { apiRead } from './api';
-import { generateEndpoint } from './api/utils';
-import { apiIndexAsync } from './indexing';
 
 /**
  * @module
@@ -22,19 +18,6 @@ const missingStore = () => (
   `)
 );
 
-const toModel = (Model) => (data = null) => (data ? new Model(data) : data);
-const mapToModel = (Model) => (data = []) => {
-  const result = data.map((item) => toModel(Model)(item));
-  result.isFetching = data.isFetching;
-  return result;
-};
-
-const createRecordPromise = ({ promise, selector, store }) => {
-  const recordPromise = promise.then(() => selector(store.getState()));
-  recordPromise.selector = selector;
-  return recordPromise;
-};
-
 class Store {
   bind(store) {
     this._store = store;
@@ -51,63 +34,6 @@ class Store {
 
   get state() {
     return this.store.getState().api.resources;
-  }
-
-  peek(id, { model } = {}) {
-    return toModel(model)(this.state[model.type][id]);
-  }
-
-  /**
-   * @param {String|Number} id
-   * @param {Object} options
-   * @param {Model} options.model
-   * @returns {RecordPromise<Model|null>}
-   */
-  find(id, { model } = {}) {
-    const endpoint = `${model.endpoint('read')}/${id}`;
-    const promise = this.dispatch(apiRead({ resource: model, endpoint }));
-    const mapper = toModel(model);
-    const selector = createSelector(
-      (state) => state.api.resources[model.type],
-      (resources = {}) => mapper(resources[id]),
-    );
-
-    return createRecordPromise({ promise, selector, store: this.store });
-  }
-
-  peekAll({ model } = {}) {
-    return mapToModel(model)(Object.values(this.state[model.type]));
-  }
-
-  findAll({ model } = {}) {
-    const promise = this.dispatch(apiRead({ resource: model }));
-    const mapper = mapToModel(model);
-    const selector = createSelector(
-      (state) => state.api.resources[model.type],
-      (resources = {}) => mapper(Object.values(resources)),
-    );
-
-    return createRecordPromise({ promise, selector, store: this.store });
-  }
-
-  query(query, { model, endpoint = model.endpoint('read') } = {}) {
-    const queryEndpoint = generateEndpoint(endpoint, query);
-    const promise = this.dispatch(apiRead({
-      resource: model,
-      endpoint: queryEndpoint
-    })).then(({ data = [] }) => data);
-    this.dispatch(apiIndexAsync({ hash: endpoint, promise }));
-    const selector = createSelector(
-      (state) => state.api.indices[endpoint],
-      (state) => state.api.resources[model.type],
-      (index = []) => {
-        const results = index.map((item) => this.peek(item.id, { model }));
-        results.isFetching = index.isFetching;
-        return results;
-      }
-    );
-
-    return createRecordPromise({ promise, selector, store: this.store });
   }
 }
 

@@ -1,5 +1,5 @@
 import './polyfill';
-import Store from './store';
+import QueryProxy from './query';
 import Registry from './registry';
 
 /**
@@ -30,7 +30,7 @@ const defineRelationship = (object, field, attribute) => {
 
   Object.defineProperty(object, field, {
     get() {
-      const find = ({ id } = {}) => Store.peek(id, { model: Registry.get(resource) });
+      const find = ({ id } = {}) => Registry.get(resource).peek(id);
       const fetch = (isArray ? (data = []) => data.map(find) : find);
       const data = this.data.relationships[key].data;
       return fetch(data);
@@ -40,7 +40,7 @@ const defineRelationship = (object, field, attribute) => {
   const fetchName = `fetch${field[0].toUpperCase()}${field.slice(1)}`;
   Object.defineProperty(object, fetchName, {
     get() {
-      const find = ({ id } = {}) => Store.find(id, { model: Registry.get(resource) });
+      const find = ({ id } = {}) => Registry.get(resource).find(id);
       const fetch = (isArray ? (data = []) => Promise.all(data.map(find)) : find);
       const data = this.data.relationships[key].data;
       return () => fetch(data);
@@ -155,13 +155,19 @@ export default function (type, model = class {}) {
     static relationships = {};
 
     /**
+     * @private
+     */
+    static get queryProxy() {
+      this._queryProxy = this._queryProxy || new QueryProxy(this);
+      return this._queryProxy;
+    }
+
+    /**
      * Retrieves a resource from the store
-     * @see {@link module:active-redux/store.peek}
-     * @param {String|Number} id
-     * @return {Model|null}
+     * @see {@link module:active-redux/query.peek}
      */
     static peek(id, options = {}) {
-      Store.peek(id, { ...options, model: this });
+      return this.queryProxy.peek(id, options);
     }
 
     /**
@@ -171,7 +177,14 @@ export default function (type, model = class {}) {
      * @return {RecordPromise<Model|null>}
      */
     static find(id, options = {}) {
-      Store.find(id, { ...options, model: this });
+      return this.queryProxy.find(id, options);
+    }
+
+    /**
+     *
+     */
+    static get select() {
+      return this.queryProxy.select;
     }
 
     /**
@@ -180,7 +193,7 @@ export default function (type, model = class {}) {
      * @return {RecordPromise<Array<Model>>}
      */
     static peekAll(options) {
-      Store.peekAll({ ...options, model: this });
+      return this.queryProxy.find(options);
     }
 
     /**
@@ -189,7 +202,14 @@ export default function (type, model = class {}) {
      * @return {RecordPromise<Array<Model>>}
      */
     static findAll(options) {
-      return Store.findAll({ ...options, model: this });
+      return this.queryProxy.find(options);
+    }
+
+    /**
+     *
+     */
+    static get selectAll() {
+      return this.queryProxy.selectAll;
     }
 
     /**
@@ -198,7 +218,14 @@ export default function (type, model = class {}) {
      * @return {RecordPromise<Array<Model>>}
      */
     static query(query, options) {
-      return Store.query(query, { ...options, model: this });
+      return this.queryProxy.query(query, options);
+    }
+
+    /**
+     *
+     */
+    static get selectQuery() {
+      return this.queryProxy.selectQuery;
     }
 
     /**

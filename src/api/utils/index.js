@@ -1,5 +1,4 @@
 import imm from 'object-path-immutable';
-import qs from 'qs';
 import Registry from '../../registry';
 import '../../polyfill';
 
@@ -180,11 +179,3 @@ export const markPendingResources = (state, { data }) => (
     return acc.set(['resources', resource.type, resource.id, 'isPending'], true);
   }, imm(state)).value()
 );
-
-export const generateEndpoint = (endpoint, query) => {
-  let queryString = query;
-  if (typeof query !== 'string') {
-    queryString = qs.stringify(query);
-  }
-  return `${endpoint}?${queryString}`;
-};
