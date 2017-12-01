@@ -80,3 +80,18 @@ const joe = Person.find(5)
 ```
 
 ## [The Reducers](https://coverhound.github.io/active-redux/1.0.0/module-active-redux_api.html)
+
+### Example
+
+You can find an example [here](./example). In order to set it up, you can do the
+following:
+
+```sh
+cd example
+bin/prepare
+
+# in one process
+yarn server
+# in another
+yarn start
+```

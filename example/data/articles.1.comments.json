@@ -1,0 +1,67 @@
+{
+  "data": [
+    {
+      "type": "comments",
+      "id": "15",
+      "attributes": {
+        "body": "First!"
+      },
+      "relationships": {
+        "article": {
+          "data": {
+            "type": "articles",
+            "id": "1"
+          }
+        },
+        "op": {
+          "data": {
+            "type": "people",
+            "id": "7"
+          }
+        }
+      }
+    },
+    {
+      "type": "comments",
+      "id": "16",
+      "attributes": {
+        "body": "Please don't spam..."
+      },
+      "relationships": {
+        "article": {
+          "data": {
+            "type": "articles",
+            "id": "1"
+          }
+        },
+        "op": {
+          "data": {
+            "type": "people",
+            "id": "5"
+          }
+        }
+      }
+    },
+    {
+      "type": "comments",
+      "id": "17",
+      "attributes": {
+        "body": "Sorry!"
+      },
+      "relationships": {
+        "article": {
+          "data": {
+            "type": "articles",
+            "id": "1"
+          }
+        },
+        "op": {
+          "data": {
+            "type": "people",
+            "id": "7"
+          }
+        }
+      }
+    }
+  ]
+}

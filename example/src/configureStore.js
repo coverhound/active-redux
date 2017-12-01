@@ -1,8 +1,8 @@
-import { applyMiddleware, compose, combineReducers, createStore as createReduxStore } from 'redux';
+import { applyMiddleware, compose, combineReducers, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import { reducer } from '../../dist';
+import { api } from 'active-redux';
 
-const createStore = (initialState = {}) => {
+export default (initialState = {}) => {
   // ======================================================
   // Middleware Configuration
   // ======================================================
@@ -23,16 +23,16 @@ const createStore = (initialState = {}) => {
   // ======================================================
   // Store Instantiation
   // ======================================================
-  const store = createReduxStore(
-    combineReducers(reducer),
+  const store = createStore(
+    combineReducers({ api: api.reducer }),
     initialState,
     composeEnhancers(
       applyMiddleware(...middleware),
       ...enhancers
     )
-  )
+  );
 
-  return store
-}
+  store.dispatch(api.apiConfigure({ baseURL: 'http://localhost:3000/api/' }));
 
-export default createStore
+  return store;
+};

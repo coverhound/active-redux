@@ -1,14 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import { Provider } from 'react-redux';
+import { bind } from 'active-redux';
+
 import './index.css';
 import createStore from './configureStore';
-import { Registry, Model } from '../../dist';
+import App from './app';
 
 let store = createStore();
-Registry.store = store;
+bind(store);
 
 ReactDOM.render(
-  <App />,
+  <Provider store={store}><App /></Provider>,
   document.getElementById('root')
 );
