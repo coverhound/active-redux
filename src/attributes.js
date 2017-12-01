@@ -27,7 +27,8 @@
  * }
  *
  * const person = new Person(data);
- * person.employer => Promise<Company>
+ * person.employer // => Company|null
+ * person.fetchEmployer // => Promise<Company|null>
  * @param {string} resource JSON-API type of relationship
  * @param {Object} options
  * @param {string} options.name JSON-API name of the attribute
@@ -67,7 +68,8 @@ export const hasOne = (resource, { name } = {}) => ({
  * }
  *
  * const person = new Person(data);
- * person.posts // => Promise<Array<Article>>
+ * person.posts // => Array<Article>
+ * person.fetchPosts // => Promise<Array<Article>>
  * @param {string} resource JSON-API type of relationship
  * @param {Object} options
  * @param {string} options.name JSON-API name of the attribute

@@ -24,15 +24,24 @@ const defineAttribute = (object, field, attribute) => {
  * @private
  */
 const defineRelationship = (object, field, attribute) => {
+  const key = attribute.name || field;
   const { isArray, resource } = object.constructor.attributes[field];
-  const model = Registry.get(resource);
-  if (!model) throw new Error(`Unregistered model: ${resource}`);
-  const find = ({ id } = {}) => Store.find(id, { model });
-  const fetch = (isArray ? (data = []) => Promise.all(data.map(find)) : find);
 
   Object.defineProperty(object, field, {
     get() {
-      const data = this.data.relationships[attribute.name || field].data;
+      const find = ({ id } = {}) => Store.peek(id, { model: Registry.get(resource) });
+      const fetch = (isArray ? (data = []) => data.map(find) : find);
+      const data = this.data.relationships[key].data;
+      return fetch(data);
+    }
+  });
+
+  const fetchName = `fetch${field[0].toUpperCase()}${field.slice(1)}`;
+  Object.defineProperty(object, fetchName, {
+    get() {
+      const find = ({ id } = {}) => Store.find(id, { model: Registry.get(resource) });
+      const fetch = (isArray ? (data = []) => Promise.all(data.map(find)) : find);
+      const data = this.data.relationships[key].data;
       return () => fetch(data);
     }
   });
