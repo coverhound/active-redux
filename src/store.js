@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
 import './polyfill';
 import { apiRead } from './api';
-import { apiIndexAsync, queryEndpoint } from './indexing';
+import { generateEndpoint } from './api/utils';
+import { apiIndexAsync } from './indexing';
 
 /**
  * @module
@@ -22,7 +23,11 @@ const missingStore = () => (
 );
 
 const toModel = (Model) => (data = null) => (data ? new Model(data) : data);
-const mapToModel = (Model) => (data) => data.map((item) => toModel(Model)(item));
+const mapToModel = (Model) => (data = []) => {
+  const result = data.map((item) => toModel(Model)(item));
+  result.isFetching = data.isFetching;
+  return result;
+};
 
 const createRecordPromise = ({ promise, selector, store }) => {
   const recordPromise = promise.then(() => selector(store.getState()));
@@ -85,9 +90,12 @@ class Store {
     return createRecordPromise({ promise, selector, store: this.store });
   }
 
-  query(query, { model } = {}) {
-    const endpoint = queryEndpoint(model.endpoint('read'), query);
-    const promise = this.dispatch(apiRead({ resource: model, endpoint })).then(({ data }) => data);
+  query(query, { model, endpoint = model.endpoint('read') } = {}) {
+    const queryEndpoint = generateEndpoint(endpoint, query);
+    const promise = this.dispatch(apiRead({
+      resource: model,
+      endpoint: queryEndpoint
+    })).then(({ data = [] }) => data);
     this.dispatch(apiIndexAsync({ hash: endpoint, promise }));
     const selector = createSelector(
       (state) => state.api.indices[endpoint],
