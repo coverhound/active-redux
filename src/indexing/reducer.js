@@ -43,7 +43,6 @@ export const apiIndexAsync = ({ hash, promise }) => (dispatch, getState) => {
     return data;
   }).catch((err) => {
     dispatch(apiIndexDone({ hash, data: [] }));
-    return Promise.reject(err);
   });
 };
 export const apiIndexSync = ({ hash, data }) => (dispatch) => {

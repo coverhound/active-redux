@@ -1,4 +1,5 @@
 import imm from 'object-path-immutable';
+import qs from 'qs';
 import Registry from '../../registry';
 import '../../polyfill';
 
@@ -63,6 +64,8 @@ export const getProperty = (object, ...keys) => (
  */
 export const createReverseRelationships = (state, newState, { id, type, relationships = {} }) => {
   Object.values(relationships).forEach(({ data }) => {
+    if (!data) return;
+
     const children = resourcesArray(data);
     const childModel = Registry.get(children[0].type);
     const childData = { type, id };
@@ -71,6 +74,7 @@ export const createReverseRelationships = (state, newState, { id, type, relation
     const { key, isArray } = childModel.relationships[type];
 
     children.forEach(({ type: relType, id: relId }) => {
+      if (!getProperty(state, 'resources', relType, relId)) return;
       const objectPath = ['resources', relType, relId, 'relationships', key];
       const existingRelationships = resourcesArray(getProperty(state, ...objectPath));
 
@@ -98,9 +102,7 @@ export const mergeResources = (state, { data, included = [] }) => {
 
   resourcesArray(data).concat(included).forEach((dataObj) => {
     const { id, type } = dataObj;
-    // if we don't do this and the ID is a number, it'll create an array
-    if (!getProperty(state, 'resources', type)) newState.set(['resources', type], {});
-    newState.set(['resources', type, id], dataObj);
+    newState.set(['resources', type, String(id)], dataObj);
     createReverseRelationships(state, newState, dataObj);
   });
 
@@ -178,3 +180,11 @@ export const markPendingResources = (state, { data }) => (
     return acc.set(['resources', resource.type, resource.id, 'isPending'], true);
   }, imm(state)).value()
 );
+
+export const generateEndpoint = (endpoint, query) => {
+  let queryString = query;
+  if (typeof query !== 'string') {
+    queryString = qs.stringify(query);
+  }
+  return `${endpoint}?${queryString}`;
+};

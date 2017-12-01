@@ -1,5 +1,4 @@
 import Store from './store';
-import define from './model';
 /**
  * @module active-redux
  */
@@ -7,6 +6,8 @@ import define from './model';
 import * as Attr from './attributes';
 import * as api from './api';
 import { extension as indexing } from './indexing';
+
+export define from './model';
 
 api.reducer = api.reducer.extend(indexing);
 
@@ -29,7 +30,6 @@ export {
  */
   Attr,
   bind,
-  define,
 /**
  * @alias module:active-redux.api
  * @see module:active-redux/api

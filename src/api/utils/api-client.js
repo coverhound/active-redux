@@ -7,7 +7,8 @@ const jsonContentTypes = [
 ];
 
 const validateContentType = (response) => {
-  if (jsonContentTypes.includes(response.headers['content-type'])) return;
+  const contentType = response.headers['content-type'].split(';')[0];
+  if (jsonContentTypes.includes(contentType)) return;
 
   throw createError(
     'Invalid Content-Type in response',

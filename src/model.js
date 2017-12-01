@@ -13,9 +13,10 @@ const invalidAttribute = (field) => (
  * @private
  */
 const defineAttribute = (object, field, attribute) => {
+  const key = attribute.name || field;
   Object.defineProperty(object, field, {
     get() {
-      return attribute.cast(this.data.attributes[attribute.name || field]);
+      return attribute.cast(this.data.attributes[key]);
     }
   });
 };
@@ -99,13 +100,14 @@ export const parseParams = (context, string) => {
 /**
   * Defines a model
   * @alias module:active-redux.define
+  * @function define
   * @example
   * const Person = ActiveRedux.define('people', class Person {});
   * @param {string} type - JSON-API type for the model
   * @param {Class} [model] - Class to extend
   * @return {Model}
   */
-export default function define(type, model = class {}) {
+export default function (type, model = class {}) {
   /**
    * Active Redux Model
    * @property {String|Number} id JSON-API Resource ID
@@ -158,7 +160,9 @@ export default function define(type, model = class {}) {
      * @param {String|Number} id
      * @return {Model|null}
      */
-    static peek = (id, options = {}) => Store.peek(id, { ...options, model: this });
+    static peek(id, options = {}) {
+      Store.peek(id, { ...options, model: this });
+    }
 
     /**
      * Fetches a record from the server. Will serve a cached version if available.
@@ -166,28 +170,36 @@ export default function define(type, model = class {}) {
      * @param {String|Number} id
      * @return {RecordPromise<Model|null>}
      */
-    static find = (id, options = {}) => Store.find(id, { ...options, model: this });
+    static find(id, options = {}) {
+      Store.find(id, { ...options, model: this });
+    }
 
     /**
      * Gets all of that resource in the store
      * @see {@link module:active-redux/store.peekAll}
      * @return {RecordPromise<Array<Model>>}
      */
-    static peekAll = (options) => Store.peekAll({ ...options, model: this });
+    static peekAll(options) {
+      Store.peekAll({ ...options, model: this });
+    }
 
     /**
      * Fetches all of that record from the server. Will serve a cached version if available.
      * @see {@link module:active-redux/store.findAll}
      * @return {RecordPromise<Array<Model>>}
      */
-    static findAll = (options) => Store.findAll({ ...options, model: this });
+    static findAll(options) {
+      return Store.findAll({ ...options, model: this });
+    }
 
     /**
      * Fetches a query from the server.
      * @see {@link module:active-redux/store.query}
      * @return {RecordPromise<Array<Model>>}
      */
-    static query = (query, options) => Store.query(query, { ...options, model: this });
+    static query(query, options) {
+      return Store.query(query, { ...options, model: this });
+    }
 
     /**
     * Find the endpoint for a specific action
