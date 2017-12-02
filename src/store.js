@@ -51,9 +51,6 @@ export const queryData = (entities, query) => (
   ))
 );
 
-// Instantiate JSON-API data with its corresponding Model
-const initModel = (Model) => (data) => data && new Model(data);
-
 class Store {
   bind(store) {
     this._store = store;
@@ -73,25 +70,27 @@ class Store {
   }
 
   all({ model } = {}) {
-    return Promise.resolve(
-      Object.values(this.state[model.type]).map(initModel(model))
-    );
+    return Promise.resolve(Object.values(this.state[model.type]));
   }
 
   where(query, { remote = true, model } = {}) {
     const local = queryData(Object.values(this.state[model.type]), query);
     if (local.length > 0 || remote === false) {
-      return Promise.resolve(local.map(initModel(model)));
+      return Promise.resolve(local);
     }
 
     return this.dispatch(remoteRead({ resource: model, query }))
       .then(() => this.where(query, { remote: false, model }));
   }
 
+  fromIndex({ id, type }) {
+    return this.state[type][id];
+  }
+
   findById(id, { remote = true, model } = {}) {
-    const local = this.state[model.type][id];
+    const local = this.fromIndex({ id, type: model.type });
     if (local || remote === false) {
-      return Promise.resolve(initModel(model)(local));
+      return Promise.resolve(local);
     }
 
     const endpoint = `${this.endpoint('read')}/${id}`;
