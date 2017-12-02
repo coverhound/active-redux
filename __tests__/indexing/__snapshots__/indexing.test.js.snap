@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`reducer apiIndexAsync() creates the index when the promise is rejected 1`] = `
+Object {
+  "people.id=5,10": Array [],
+}
+`;
+
+exports[`reducer apiIndexAsync() creates the index when the promise resolves 1`] = `
+Object {
+  "people.id=5,10": Array [
+    Object {
+      "id": 5,
+      "type": "people",
+    },
+  ],
+}
+`;
+
+exports[`reducer apiIndexClear() clears the index 1`] = `
+Object {
+  "people.id=5,10": Array [],
+}
+`;
+
+exports[`reducer apiIndexSync() creates the index 1`] = `
+Object {
+  "people.id=5,10": Array [
+    Object {
+      "id": 5,
+      "type": "people",
+    },
+  ],
+}
+`;

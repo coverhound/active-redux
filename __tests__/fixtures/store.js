@@ -1,10 +1,11 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import reducer from '../../src/api/reducer';
+import { reducer } from '../../src/api';
 
 const initialState = {
   api: {
     apiConfig: {},
+    indices: {},
     resources: {
       people: {
         9: {
