@@ -1,0 +1,342 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QueryProxy #find() it resolves to all resources in the store 1`] = `
+Comment {
+  "data": Object {
+    "attributes": Object {
+      "body": "[redacted]",
+    },
+    "id": "5",
+    "links": Object {
+      "self": "http://example.com/comments/5",
+    },
+    "relationships": Object {
+      "author": Object {
+        "data": Object {
+          "id": "9",
+          "type": "people",
+        },
+      },
+    },
+    "type": "comments",
+  },
+}
+`;
+
+exports[`QueryProxy #findAll() it resolves to the fetched resources 1`] = `
+Array [
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "First!",
+      },
+      "id": "5",
+      "links": Object {
+        "self": "http://example.com/comments/5",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "I like XML better",
+      },
+      "id": "12",
+      "links": Object {
+        "self": "http://example.com/comments/12",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "nice",
+      },
+      "id": "132",
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "eh",
+      },
+      "id": "215",
+      "type": "comments",
+    },
+  },
+]
+`;
+
+exports[`QueryProxy #peek() returns the resource 1`] = `
+Comment {
+  "data": Object {
+    "attributes": Object {
+      "body": "First!",
+    },
+    "id": "5",
+    "links": Object {
+      "self": "http://example.com/comments/5",
+    },
+    "relationships": Object {
+      "author": Object {
+        "data": Object {
+          "id": "9",
+          "type": "people",
+        },
+      },
+    },
+    "type": "comments",
+  },
+}
+`;
+
+exports[`QueryProxy #peekAll() returns the resources 1`] = `
+Array [
+  Person {
+    "data": Object {
+      "attributes": Object {
+        "address": Object {
+          "road": "123 Main St",
+        },
+        "first-name": "Dan",
+        "last-name": "Gebhardt",
+        "twitter": "dgeb",
+      },
+      "id": "9",
+      "links": Object {
+        "self": "http://example.com/people/9",
+      },
+      "relationships": Object {
+        "comments": Object {
+          "data": Array [
+            Object {
+              "id": "5",
+              "type": "comments",
+            },
+            Object {
+              "id": "12",
+              "type": "comments",
+            },
+          ],
+        },
+      },
+      "type": "people",
+    },
+  },
+  Person {
+    "data": Object {
+      "attributes": Object {
+        "address": Object {
+          "road": "A different Road",
+        },
+        "first-name": "Bob",
+        "last-name": "Dyland",
+        "twitter": "shredmaster",
+      },
+      "id": "14",
+      "links": Object {
+        "self": "http://example.com/people/14",
+      },
+      "type": "people",
+    },
+  },
+]
+`;
+
+exports[`QueryProxy #query() it resolves to the fetched resources 1`] = `
+Array [
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "firetruck!",
+      },
+      "id": "140",
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "fishing?",
+      },
+      "id": "581",
+      "type": "comments",
+    },
+  },
+]
+`;
+
+exports[`QueryProxy #select() while fetching if the resource is in the store, it returns that resource 1`] = `
+Comment {
+  "data": Object {
+    "attributes": Object {
+      "body": "First!",
+    },
+    "id": "5",
+    "links": Object {
+      "self": "http://example.com/comments/5",
+    },
+    "relationships": Object {
+      "author": Object {
+        "data": Object {
+          "id": "9",
+          "type": "people",
+        },
+      },
+    },
+    "type": "comments",
+  },
+}
+`;
+
+exports[`QueryProxy #selectAll() after fetching returns what's in the store 1`] = `
+Array [
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "First!",
+      },
+      "id": "5",
+      "links": Object {
+        "self": "http://example.com/comments/5",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "I like XML better",
+      },
+      "id": "12",
+      "links": Object {
+        "self": "http://example.com/comments/12",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "nice",
+      },
+      "id": "132",
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "eh",
+      },
+      "id": "215",
+      "type": "comments",
+    },
+  },
+]
+`;
+
+exports[`QueryProxy #selectAll() while fetching it returns what's in the store 1`] = `
+Array [
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "First!",
+      },
+      "id": "5",
+      "links": Object {
+        "self": "http://example.com/comments/5",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "I like XML better",
+      },
+      "id": "12",
+      "links": Object {
+        "self": "http://example.com/comments/12",
+      },
+      "relationships": Object {
+        "author": Object {
+          "data": Object {
+            "id": "9",
+            "type": "people",
+          },
+        },
+      },
+      "type": "comments",
+    },
+  },
+]
+`;
+
+exports[`QueryProxy #selectQuery() after fetching returns what's in the store 1`] = `
+Array [
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "firetruck!",
+      },
+      "id": "140",
+      "type": "comments",
+    },
+  },
+  Comment {
+    "data": Object {
+      "attributes": Object {
+        "body": "fishing?",
+      },
+      "id": "581",
+      "type": "comments",
+    },
+  },
+]
+`;
+
+exports[`QueryProxy #selectQuery() while fetching it returns what's in the store 1`] = `Array []`;

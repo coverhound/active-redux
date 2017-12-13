@@ -1,14 +1,9 @@
-import { bind, define } from 'active-redux';
 import Store from 'active-redux/store';
-import mockStore from 'fixtures/store';
+import createMockStore from 'fixtures/store';
 
 describe('Store', () => {
-  beforeEach(() => {
-    bind(mockStore);
-  });
-
-  const Comment = define('comments', class Comment {});
-  const Person = define('people', class Person {});
+  const mockStore = createMockStore();
+  Store.bind(mockStore);
 
   describe('#store', () => {
     test('is the bound store', () => {
@@ -25,44 +20,6 @@ describe('Store', () => {
   describe('#state', () => {
     test('provides a getter for store dispatch', () => {
       expect(Store.state).toBe(mockStore.getState().api.resources);
-    });
-  });
-
-  describe('#all', () => {
-    test('should return all values from a resource store', async () => {
-      const response = await Store.all({ model: Comment });
-      expect(response).toMatchSnapshot();
-    });
-  });
-
-  describe('#find', () => {
-    test('should find an entity in store by id', async () => {
-      const response = await Store.find({ id: 5 }, { model: Comment });
-      expect(response.body).toMatchSnapshot();
-    });
-
-    test('should find an entity in by query', async () => {
-      const response = await Store.find({ attributes: { body: 'First!' } }, { model: Comment });
-      expect(response).toMatchSnapshot();
-    });
-  });
-
-  describe('#where', () => {
-    test('should return an array of values matching a query', async () => {
-      const response = await Store.where({ attributes: { body: 'First!' } }, { model: Comment });
-      expect(response).toMatchSnapshot();
-    });
-
-    test('should allow arrays as lookup value', async () => {
-      const response = await Store.where({ id: ['5', '12'] }, { model: Comment });
-      expect(response).toMatchSnapshot();
-    });
-
-    test('should search for nested properties', async () => {
-      const response = await Store.where({ attributes: {
-        address: { road: '123 Main St' }
-      } }, { model: Person });
-      expect(response).toMatchSnapshot();
     });
   });
 });

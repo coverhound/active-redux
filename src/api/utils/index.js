@@ -63,12 +63,17 @@ export const getProperty = (object, ...keys) => (
  */
 export const createReverseRelationships = (state, newState, { id, type, relationships = {} }) => {
   Object.values(relationships).forEach(({ data }) => {
+    if (!data) return;
+
     const children = resourcesArray(data);
     const childModel = Registry.get(children[0].type);
     const childData = { type, id };
+    if (!childModel.relationships[type]) return;
+
     const { key, isArray } = childModel.relationships[type];
 
     children.forEach(({ type: relType, id: relId }) => {
+      if (!getProperty(state, 'resources', relType, relId)) return;
       const objectPath = ['resources', relType, relId, 'relationships', key];
       const existingRelationships = resourcesArray(getProperty(state, ...objectPath));
 
@@ -95,9 +100,8 @@ export const mergeResources = (state, { data, included = [] }) => {
   const newState = imm(state);
 
   resourcesArray(data).concat(included).forEach((dataObj) => {
-    // if we don't do this and the ID is a number, it'll create an array
-    newState.set(['resources', dataObj.type], state[dataObj.type] || {});
-    newState.set(['resources', dataObj.type, dataObj.id], dataObj);
+    const { id, type } = dataObj;
+    newState.set(['resources', type, String(id)], dataObj);
     createReverseRelationships(state, newState, dataObj);
   });
 
@@ -136,12 +140,33 @@ export const clearResources = (state, data) => {
 export const createAction = (type) => (payload) => ({ type, payload });
 
 /**
- * @param {Object} mappings Reducer handlers per action
- * @param {Object} initialState
+ * @typedef {Object} ReducerFactory
+ * @property {Object} map Action to function mapping
+ * @property {Object} initialState Initial reducer state
+ *
+ * @param {ReducerFactory} base
+ * @param {...ReducerFactory} extensions
  */
-export const createReducer = (mappings, initialState) => (state = initialState, action) => (
-  mappings[action.type] ? mappings[action.type](state, action) : state
-);
+export const createReducer = ({ map, initialState }, ...extensions) => {
+  const extend = (...addedExtensions) => (
+    createReducer({ map, initialState }, ...extensions, ...addedExtensions)
+  );
+
+  const reducerFactory = imm({ map, initialState }).value();
+  extensions.forEach(({ map: m, initialState: i }) => {
+    Object.assign(reducerFactory.map, m);
+    Object.assign(reducerFactory.initialState, i);
+  });
+
+  const reducer = (state = reducerFactory.initialState, action) => {
+    const reduce = reducerFactory.map[action.type];
+    return reduce === undefined ? state : reduce(state, action);
+  };
+
+  reducer.extend = extend;
+
+  return reducer;
+};
 
 /**
  * @param {Object} state

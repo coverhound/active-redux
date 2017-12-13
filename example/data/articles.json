@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "type": "articles",
+      "id": "1",
+      "attributes": {
+        "title": "10 ways cats can help you live to 100",
+        "body": "Coming soon..."
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "people",
+            "id": "5"
+          }
+        },
+        "comments": {
+          "data": [
+            { "type": "comments", "id": "15" },
+            { "type": "comments", "id": "16" },
+            { "type": "comments", "id": "17" }
+          ]
+        }
+      }
+    },
+    {
+      "type": "articles",
+      "id": "2",
+      "attributes": {
+        "title": "Why dogs are destroying America",
+        "body": "Seriously."
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "people",
+            "id": "5"
+          }
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "people",
+      "id": "5",
+      "attributes": {
+        "name": "Marquetta Kinslow"
+      },
+      "relationships": {
+        "posts": {
+          "data": [
+            { "type": "articles", "id": "1" },
+            { "type": "articles", "id": "2" }
+          ]
+        },
+        "comments": {
+          "data": [
+            { "type": "comments", "id": "16" }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -191,7 +191,7 @@ describe('Utils', () => {
 
     describe('given an unmapped action', () => {
       test('returns the state', () => {
-        const reducer = utils.createReducer({}, {});
+        const reducer = utils.createReducer({ map: {}, initialState: {} });
         expect(reducer(initialState, { type })).toEqual(initialState);
       });
     });
@@ -199,10 +199,13 @@ describe('Utils', () => {
     describe('given a mapped action', () => {
       test('calls that action', () => {
         const reducer = utils.createReducer({
-          [type]: (state, { payload }) => ({
-            foo: state.foo + payload
-          })
-        }, {});
+          map: {
+            [type]: (state, { payload }) => ({
+              foo: state.foo + payload
+            })
+          },
+          initialState: {},
+        });
         expect(reducer(initialState, { type, payload: 'baz' })).toEqual({
           foo: 'barbaz'
         });
@@ -211,7 +214,7 @@ describe('Utils', () => {
 
     describe('when the state is undefined', () => {
       test('returns the initial state', () => {
-        const reducer = utils.createReducer({}, initialState);
+        const reducer = utils.createReducer({ map: {}, initialState });
         expect(reducer(undefined, { type: 'FOO' })).toEqual(initialState);
       });
     });

@@ -8,7 +8,8 @@ class Registry {
   }
 
   get(name) {
-    return this.models[name];
+    if (this.models[name]) return this.models[name];
+    throw new Error(`Unregistered model: ${name}`);
   }
 
   register(model) {

@@ -1,5 +1,5 @@
 import './polyfill';
-import Store from './store';
+import QueryProxy from './query';
 import Registry from './registry';
 
 /**
@@ -13,9 +13,10 @@ const invalidAttribute = (field) => (
  * @private
  */
 const defineAttribute = (object, field, attribute) => {
+  const key = attribute.name || field;
   Object.defineProperty(object, field, {
     get() {
-      return attribute.cast(this.data.attributes[attribute.name || field]);
+      return attribute.cast(this.data.attributes[key]);
     }
   });
 };
@@ -24,18 +25,25 @@ const defineAttribute = (object, field, attribute) => {
  * @private
  */
 const defineRelationship = (object, field, attribute) => {
+  const key = attribute.name || field;
+  const { isArray, resource } = object.constructor.attributes[field];
+
   Object.defineProperty(object, field, {
     get() {
-      const { isArray, resource } = this.constructor.attributes[field];
-      const model = Registry.get(resource);
-      if (!model) {
-        throw new Error(`Unregistered model: ${resource}`);
-      }
-      const data = this.data.relationships[attribute.name || field].data;
+      const find = ({ id } = {}) => Registry.get(resource).peek(id);
+      const fetch = (isArray ? (data = []) => data.map(find) : find);
+      const data = this.data.relationships[key].data;
+      return fetch(data);
+    }
+  });
 
-      return isArray
-        ? Store.where({ id: data.map((d) => d.id) }, { model })
-        : Store.find({ id: data.id }, { model });
+  const fetchName = `fetch${field[0].toUpperCase()}${field.slice(1)}`;
+  Object.defineProperty(object, fetchName, {
+    get() {
+      const find = ({ id } = {}) => Registry.get(resource).find(id);
+      const fetch = (isArray ? (data = []) => Promise.all(data.map(find)) : find);
+      const data = this.data.relationships[key].data;
+      return () => fetch(data);
     }
   });
 };
@@ -92,13 +100,14 @@ export const parseParams = (context, string) => {
 /**
   * Defines a model
   * @alias module:active-redux.define
+  * @function define
   * @example
   * const Person = ActiveRedux.define('people', class Person {});
   * @param {string} type - JSON-API type for the model
   * @param {Class} [model] - Class to extend
   * @return {Model}
   */
-export default function define(type, model = class {}) {
+export default function (type, model = class {}) {
   /**
    * Active Redux Model
    * @property {String|Number} id JSON-API Resource ID
@@ -146,42 +155,77 @@ export default function define(type, model = class {}) {
     static relationships = {};
 
     /**
-    * Gets all of that resource
-    * @example
-    * Person.all()
-    * // => Promise<Array<Person>>
-    * @return {Promise<Array<this>>} Array of model instances
-    */
-    static all() {
-      return Store.all({ model: this });
+     * @private
+     */
+    static get queryProxy() {
+      this._queryProxy = this._queryProxy || new QueryProxy(this);
+      return this._queryProxy;
     }
 
     /**
-    * Queries the store for that resource
-    * @example
-    * Person.where({ name: "Joe" })
-    * // => Promise<Array<Person>>
-    * @param {Object} query - Query for the store
-    * @param {Object} [options]
-    * @param {boolean} [options.remote] - Call to API if no records found?
-    * @return {Promise<Array<this>>} Array of model instances
-    */
-    static where(query = {}, options = {}) {
-      return Store.where(query, { model: this, ...options });
+     * Retrieves a resource from the store
+     * @see {@link module:active-redux/query.peek}
+     */
+    static peek(id, options = {}) {
+      return this.queryProxy.peek(id, options);
     }
 
     /**
-    * Gets one of that resource
-    * @example
-    * Person.find({ id: 5 })
-    * // => Promise<Person>
-    * @param {Object} query - Query for the store
-    * @param {Object} [options]
-    * @param {boolean} [options.remote] - Call to API if no records found?
-    * @return {Promise<(this|null)>} A model instance
-    */
-    static find(query = {}, options = {}) {
-      return Store.find(query, { model: this, ...options });
+     * Fetches a record from the server. Will serve a cached version if available.
+     * @see {@link module:active-redux/store.find}
+     * @param {String|Number} id
+     * @return {RecordPromise<Model|null>}
+     */
+    static find(id, options = {}) {
+      return this.queryProxy.find(id, options);
+    }
+
+    /**
+     *
+     */
+    static get select() {
+      return this.queryProxy.select;
+    }
+
+    /**
+     * Gets all of that resource in the store
+     * @see {@link module:active-redux/store.peekAll}
+     * @return {RecordPromise<Array<Model>>}
+     */
+    static peekAll(options) {
+      return this.queryProxy.find(options);
+    }
+
+    /**
+     * Fetches all of that record from the server. Will serve a cached version if available.
+     * @see {@link module:active-redux/store.findAll}
+     * @return {RecordPromise<Array<Model>>}
+     */
+    static findAll(options) {
+      return this.queryProxy.find(options);
+    }
+
+    /**
+     *
+     */
+    static get selectAll() {
+      return this.queryProxy.selectAll;
+    }
+
+    /**
+     * Fetches a query from the server.
+     * @see {@link module:active-redux/store.query}
+     * @return {RecordPromise<Array<Model>>}
+     */
+    static query(query, options) {
+      return this.queryProxy.query(query, options);
+    }
+
+    /**
+     *
+     */
+    static get selectQuery() {
+      return this.queryProxy.selectQuery;
     }
 
     /**
