@@ -88,7 +88,7 @@ following:
 
 ```sh
 cd example
-bin/prepare
+yarn install
 
 # in one process
 yarn server
