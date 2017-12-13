@@ -1,6 +1,6 @@
 {
   "name": "@coverhound/active-redux",
-  "version": "1.0.1-beta.2",
+  "version": "1.0.1-beta.3",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
