@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 import Store from '../store';
 import { getProperty } from '../api/utils';
 import { apiIndexAsync } from '../indexing';
-import { apiRead } from '../api';
+import { apiRead, namespace } from '../api';
 import { generateEndpoint, createQuerySelector } from './utils';
 
 /**
@@ -143,8 +143,8 @@ export default class QueryProxy {
   );
 
   __selectQuery = (query, { endpoint } = {}) => createSelector(
-    (state) => state.api.indices[endpoint],
-    (state) => state.api.resources[this.resource],
+    (state) => state[namespace.value].indices[endpoint],
+    (state) => state[namespace.value].resources[this.resource],
     (index = []) => {
       const results = index.map(({ id }) => this.peek(id));
       results.isFetching = index.isFetching;

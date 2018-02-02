@@ -1,5 +1,6 @@
 import imm from 'object-path-immutable';
 import { createAction, resourcesArray } from '../api/utils';
+import { namespace } from '../api';
 
 /**
  * Helpers
@@ -32,7 +33,7 @@ const apiIndexDone = createAction(API_INDEX_DONE);
 export const apiIndexClear = createAction(API_INDEX_CLEAR);
 
 export const apiIndexAsync = ({ hash, promise }) => (dispatch, getState) => {
-  const indexExists = () => getState().api.indices[hash];
+  const indexExists = () => getState()[namespace.value].indices[hash];
 
   if (indexExists() && indexExists().isFetching) return promise;
 
