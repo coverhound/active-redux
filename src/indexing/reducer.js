@@ -42,7 +42,7 @@ export const apiIndexAsync = ({ hash, promise }) => (dispatch, getState) => {
   return promise.then((data) => {
     if (indexExists()) dispatch(apiIndexDone({ hash, data }));
     return data;
-  }).catch((err) => {
+  }).catch(() => {
     dispatch(apiIndexDone({ hash, data: [] }));
   });
 };
