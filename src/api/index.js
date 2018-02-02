@@ -2,6 +2,7 @@ import { createReducer } from './utils';
 import baseReducer from './reducer';
 
 export * from './reducer';
+export namespace from './namespace';
 
 /**
  * API Reducer

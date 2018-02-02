@@ -15,6 +15,8 @@ import {
   resourcesArray,
 } from './utils';
 
+import namespace from './namespace';
+
 const initialState = {
   resources: {},
   apiConfig: {},
@@ -153,7 +155,7 @@ export const apiCreate = ({ resource, endpoint = resource.endpoint('create') }) 
   return wrappedApiRequest({
     resource,
     options: {
-      ...getState().api.apiConfig,
+      ...getState()[namespace.value].apiConfig,
       method: 'POST',
       data: { data: resource }
     },
@@ -195,7 +197,7 @@ export const apiRead = ({ resource, endpoint = resource.endpoint('read') }) => (
   return wrappedApiRequest({
     resource,
     options: {
-      ...getState().api.apiConfig,
+      ...getState()[namespace.value].apiConfig,
       method: 'GET',
       data: { data: resource }
     },
@@ -240,7 +242,7 @@ export const apiUpdate = ({ resource, endpoint = resource.endpoint('update') }) 
     return wrappedApiRequest({
       resource,
       options: {
-        ...getState().api.apiConfig,
+        ...getState()[namespace.value].apiConfig,
         method: 'PATCH',
         data: { data: resource }
       },
@@ -283,7 +285,7 @@ const apiDeleteFailed = createAction(API_DELETE_FAILED);
 export const apiDelete = ({ resource, endpoint = resource.endpoint('delete') }) => (
   (dispatch, getState) => {
     const options = {
-      ...getState().api.apiConfig,
+      ...getState()[namespace.value].apiConfig,
       method: 'DELETE',
     };
 
