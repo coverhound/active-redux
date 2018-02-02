@@ -9,7 +9,7 @@ cache:
   - node_modules
 script:
 - yarn run test:ci
-after_success: "./docs.sh"
+after_success: "./scripts/docs.sh"
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
   > ./cc-test-reporter
