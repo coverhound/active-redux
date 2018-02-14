@@ -142,19 +142,22 @@ export default class QueryProxy {
     this.__query(query, { endpoint }).then(this.map)
   );
 
-  __selectQuery = (query, { endpoint } = {}) => createSelector(
-    (state) => state[namespace.value].indices[endpoint],
-    (state) => state[namespace.value].resources[this.resource],
-    (index = []) => {
-      const results = index.map(({ id }) => this.peek(id));
-      results.isFetching = index.isFetching;
-      return results;
-    },
-  );
-  __selectQueryPromise = (query, { endpoint } = {}) => {
+  __selectQuery = (query, { endpoint = this.model.endpoint('read') } = {}) => {
+    const hash = generateEndpoint(endpoint, query);
+    return createSelector(
+      (state) => state[namespace.value].indices[hash],
+      (state) => state[namespace.value].resources[this.resource],
+      (index = []) => {
+        const results = index.map(({ id }) => this.peek(id));
+        results.isFetching = index.isFetching;
+        return results;
+      },
+    );
+  };
+  __selectQueryPromise = (query, { endpoint = this.model.endpoint('read') } = {}) => {
     const promise = this.query(query, { endpoint });
     this.store.dispatch(apiIndexAsync({
-      hash: endpoint,
+      hash: generateEndpoint(endpoint, query),
       promise,
     }));
     return promise;

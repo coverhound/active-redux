@@ -46,7 +46,7 @@ export const createQuerySelector = (promise, selector) => createDeepEqualSelecto
   }
 );
 
-export const generateEndpoint = (endpoint, query) => {
+export const generateEndpoint = (endpoint = '', query = '') => {
   let queryString = query;
   if (typeof query !== 'string') {
     queryString = qs.stringify(query);
