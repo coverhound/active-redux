@@ -66,7 +66,11 @@ export const createReverseRelationships = (state, newState, { id, type, relation
     if (!data) return;
 
     const children = resourcesArray(data);
+    if (children.length === 0) return;
+
     const childModel = Registry.get(children[0].type);
+    if (!childModel) return;
+
     const childData = { type, id };
     if (!childModel.relationships[type]) return;
 
