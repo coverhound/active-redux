@@ -31,7 +31,7 @@ const defineRelationship = (object, field, attribute) => {
   Object.defineProperty(object, field, {
     get() {
       const find = ({ id } = {}) => Registry.get(resource).peek(id);
-      const fetch = (isArray ? (data = []) => data.map(find) : find);
+      const fetch = (isArray ? (data = []) => data.map(find).filter(Boolean) : find);
       const data = this.data.relationships[key].data;
       return fetch(data);
     }
