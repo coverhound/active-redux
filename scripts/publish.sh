@@ -15,5 +15,10 @@ npm test
 # Ensure we create our distributed files
 npm run dist
 
+# Tag
+version=$(npm version --json | python -c 'import sys, json; print json.load(sys.stdin)["@coverhound/active-redux"]')
+git tag "v$version"
+git push origin "v$version"
+
 # Publish
 npm publish
