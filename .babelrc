@@ -1,7 +1,38 @@
 {
-  "presets": [
-    "es2015",
-    "stage-0",
-    "react",
-  ]
+  "env": {
+    "test": {
+      "presets": [
+        ["env", {
+          "targets": {
+            "browsers": ["last 2 versions"],
+            "node": "6.11.3"
+          },
+          "useBuiltIns": true,
+        }],
+        "react"
+      ],
+      "plugins": [
+        ["transform-object-rest-spread", { "useBuiltIns": true }],
+        "transform-class-properties"
+      ],
+    },
+    "development": {
+      "presets": [
+        ["env", {
+          "modules": false,
+          "targets": {
+            "browsers": ["last 2 versions"],
+            "node": "6.11.3"
+          },
+          "useBuiltIns": true,
+        }],
+        "react"
+      ],
+      "plugins": [
+        ["transform-object-rest-spread", { "useBuiltIns": true }],
+        "transform-class-properties",
+        "external-helpers"
+      ],
+    }
+  }
 }

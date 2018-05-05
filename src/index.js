@@ -1,15 +1,15 @@
 import Store from './store';
-/**
- * @module active-redux
- */
-
 import * as Attr from './attributes';
-import * as api from './api';
+import * as apiii from './api';
 import { extension as indexing } from './indexing';
 
-export define from './model';
+export { default as define } from './model';
 
-api.reducer = api.reducer.extend(indexing);
+const api = Object.assign(
+  {},
+  apiii,
+  { reducer: apiii.reducer.extend(indexing) },
+);
 
 /**
   * Registers the store to the model for .where/.find/.all queries
