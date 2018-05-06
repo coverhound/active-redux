@@ -1,14 +1,14 @@
 import Store from './store';
 import * as Attr from './attributes';
-import * as apiii from './api';
+import * as apiTmp from './api';
 import { extension as indexing } from './indexing';
 
 export { default as define } from './model';
 
 const api = Object.assign(
   {},
-  apiii,
-  { reducer: apiii.reducer.extend(indexing) },
+  apiTmp,
+  { reducer: apiTmp.reducer.extend(indexing) },
 );
 
 /**

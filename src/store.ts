@@ -1,4 +1,5 @@
 import './polyfill';
+import { ReduxStore } from './types';
 
 /**
  * @module
@@ -19,6 +20,8 @@ const missingStore = () => (
 );
 
 class Store {
+  _store: ReduxStore;
+
   bind(store) {
     this._store = store;
   }

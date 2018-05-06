@@ -3,9 +3,7 @@
  * @private
  */
 class Registry {
-  constructor() {
-    this.models = {};
-  }
+  models = {};
 
   get(name) {
     if (this.models[name]) return this.models[name];

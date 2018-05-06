@@ -1,4 +1,5 @@
 import imm from 'object-path-immutable';
+import { ExtensibleReducer } from '../../types';
 import Registry from '../../registry';
 import '../../polyfill';
 
@@ -157,7 +158,7 @@ export const createReducer = ({ map, initialState }, ...extensions) => {
     Object.assign(reducerFactory.initialState, i);
   });
 
-  const reducer = (state = reducerFactory.initialState, action) => {
+  const reducer: ExtensibleReducer = (state = reducerFactory.initialState, action) => {
     const reduce = reducerFactory.map[action.type];
     return reduce === undefined ? state : reduce(state, action);
   };

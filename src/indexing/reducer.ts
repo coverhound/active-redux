@@ -5,7 +5,10 @@ import { namespace } from '../api';
 /**
  * Helpers
  */
-class Index extends Array {
+export class Index extends Array {
+  hash: string;
+  isFetching: boolean;
+
   constructor({ hash, isFetching = false }, ...args) {
     super(...args);
     this.hash = hash;

@@ -1,6 +1,7 @@
 import './polyfill';
 import QueryProxy from './query';
 import Registry from './registry';
+import { Relationship, AttributeMap, ModelBaseClass, JSONAPIObject } from './types';
 
 /**
  * @private
@@ -29,21 +30,21 @@ const defineRelationship = (object, field, attribute) => {
   const { isArray, resource } = object.constructor.attributes[field];
 
   Object.defineProperty(object, field, {
-    get() {
-      const find = ({ id } = {}) => Registry.get(resource).peek(id);
-      const fetch = (isArray ? (data = []) => data.map(find).filter(Boolean) : find);
+    get(): Array<any> | any {
+      const find = ({ id }: { id: string }): any => Registry.get(resource).peek(id);
       const data = this.data.relationships[key].data;
-      return fetch(data);
+      if (isArray) return data.map(find).filter(Boolean);
+      return find(data);
     }
   });
 
   const fetchName = `fetch${field[0].toUpperCase()}${field.slice(1)}`;
   Object.defineProperty(object, fetchName, {
-    get() {
-      const find = ({ id } = {}) => Registry.get(resource).find(id);
-      const fetch = (isArray ? (data = []) => Promise.all(data.map(find)) : find);
+    get(): ()=>Promise<Array<any>>|Promise<any> {
+      const find = ({ id }: { id: string }): Promise<any> => Registry.get(resource).find(id);
       const data = this.data.relationships[key].data;
-      return () => fetch(data);
+      if (isArray) return (): Promise<Array<any>> => Promise.all(data.map(find));
+      return (): Promise<any> => find(data);
     }
   });
 };
@@ -52,7 +53,7 @@ const defineRelationship = (object, field, attribute) => {
  * Define JSON-API attributes and relationships
  * @private
  */
-const defineMethods = (object, attributes) => {
+const defineMethods = (object: Function, attributes: AttributeMap) => {
   const relationships = {};
 
   Object.entries(attributes).forEach(([field, attribute]) => {
@@ -62,7 +63,7 @@ const defineMethods = (object, attributes) => {
         break;
       case 'relationship':
         defineRelationship(object.prototype, field, attribute);
-        relationships[attribute.resource] = { key: field, ...attribute };
+        relationships[(<Relationship>attribute).resource] = { key: field, ...attribute };
         break;
       default:
         throw invalidAttribute(field);
@@ -107,13 +108,13 @@ export const parseParams = (context, string) => {
   * @param {Class} [model] - Class to extend
   * @return {Model}
   */
-export default function (type, model = class {}) {
+export default function (type: string, model: ModelBaseClass) {
   /**
    * Active Redux Model
    * @property {String|Number} id JSON-API Resource ID
    * @property {String} type JSON-API Resource Type
    */
-  const Model = class extends model {
+  class Model extends model {
 
     /**
     * JSON-API type of the model
@@ -157,6 +158,7 @@ export default function (type, model = class {}) {
     /**
      * @private
      */
+    static _queryProxy: QueryProxy;
     static get queryProxy() {
       this._queryProxy = this._queryProxy || new QueryProxy(this);
       return this._queryProxy;
@@ -166,8 +168,8 @@ export default function (type, model = class {}) {
      * Retrieves a resource from the store
      * @see {@link module:active-redux/query.peek}
      */
-    static peek(id, options = {}) {
-      return this.queryProxy.peek(id, options);
+    static peek(id) {
+      return this.queryProxy.peek(id);
     }
 
     /**
@@ -176,8 +178,8 @@ export default function (type, model = class {}) {
      * @param {String|Number} id
      * @return {RecordPromise<Model|null>}
      */
-    static find(id, options = {}) {
-      return this.queryProxy.find(id, options);
+    static find(id) {
+      return this.queryProxy.find(id);
     }
 
     /**
@@ -232,7 +234,7 @@ export default function (type, model = class {}) {
     * Find the endpoint for a specific action
     * @private
     */
-    static endpoint(action, params = this) {
+    static endpoint(action, params: ModelBaseClass = this): string {
       return parseParams(params, this.endpoints[action]);
     }
 
@@ -241,12 +243,13 @@ export default function (type, model = class {}) {
     * @see Model.endpoint
     */
     endpoint(action) {
-      return this.constructor.endpoint(action, this);
+      return Model.endpoint(action, this);
     }
 
     /**
-     * @param {Object} data JSON-API data
+     * @param {data: Object} data JSON-API data
      */
+    data: JSONAPIObject;
     constructor(data) {
       super(data);
       this.data = data;
@@ -257,9 +260,9 @@ export default function (type, model = class {}) {
     }
 
     get type() {
-      return this.constructor.type;
+      return Model.type;
     }
-  };
+  }
 
   copyClassName(model, Model);
   Model.relationships = defineMethods(Model, Model.attributes);

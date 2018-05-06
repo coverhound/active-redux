@@ -16,7 +16,11 @@ describe('reducer', () => {
     store = createMockStore();
   });
 
-  const toArray = (arr) => arr.map((e) => e);
+  const toArray = (arr) => {
+    const newArr = [];
+    arr.forEach((e, index) => { newArr[index] = e; });
+    return newArr;
+  };
   const indexedPeople = [{ id: person.id, type: person.type }];
   const hash = 'people.id=5,10';
   const indexState = () => store.getState().api.indices[hash];

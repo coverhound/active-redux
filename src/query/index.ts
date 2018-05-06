@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 
+import { DataArray } from '../types';
 import Store from '../store';
 import { getProperty } from '../api/utils';
 import { apiIndexAsync } from '../indexing';
@@ -11,13 +12,18 @@ import { generateEndpoint, createQuerySelector } from './utils';
  */
 
 const toModel = (Model) => (data = null) => (data ? new Model(data) : data);
-const mapToModel = (Model) => (data = []) => {
-  const result = data.map((item) => toModel(Model)(item));
+const mapToModel = (Model) => (data: DataArray = []) => {
+  const result: DataArray = data.map((item) => toModel(Model)(item));
   result.isFetching = data.isFetching;
   return result;
 };
 
 export default class QueryProxy {
+  store = Store;
+  model: any;
+  init: any;
+  map: (any) => DataArray;
+
   constructor(model) {
     this.store = Store;
     this.model = model;
@@ -138,7 +144,7 @@ export default class QueryProxy {
    * Fetch the resources via query to the API
    * @return {Promise<Array<Model>>}
    */
-  query = (query, { endpoint } = {}) => (
+  query = (query, { endpoint }: { endpoint?: string } = {}) => (
     this.__query(query, { endpoint }).then(this.map)
   );
 

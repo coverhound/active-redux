@@ -317,7 +317,7 @@ Array [
 `;
 
 exports[`QueryProxy #selectQuery() after fetching returns what's in the store 1`] = `
-Array [
+Index [
   Comment {
     "data": Object {
       "attributes": Object {
@@ -339,4 +339,4 @@ Array [
 ]
 `;
 
-exports[`QueryProxy #selectQuery() while fetching it returns what's in the store 1`] = `Array []`;
+exports[`QueryProxy #selectQuery() while fetching it returns what's in the store 1`] = `Index []`;

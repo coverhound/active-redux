@@ -2,6 +2,7 @@
  * @private
  */
 class Namespace {
+  namespace: string;
   constructor(value) { this.namespace = value; }
   get value() { return this.namespace; }
   set change(value) { this.namespace = value; }

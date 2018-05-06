@@ -1,3 +1,4 @@
+import { Relationship, StaticAttribute, AttributeParams } from './types';
 /**
  * @module active-redux/attributes
  */
@@ -33,7 +34,10 @@
  * @param {Object} options
  * @param {string} options.name JSON-API name of the attribute
  */
-export const hasOne = (resource, { name } = {}) => ({
+export const hasOne = (
+  resource,
+  { name = undefined }: { name?: string } = {},
+): Relationship => ({
   type: 'relationship',
   resource,
   name,
@@ -74,14 +78,19 @@ export const hasOne = (resource, { name } = {}) => ({
  * @param {Object} options
  * @param {string} options.name JSON-API name of the attribute
  */
-export const hasMany = (resource, { name } = {}) => ({
+export const hasMany = (
+  resource,
+  { name = undefined }: { name?: string } = {},
+): Relationship => ({
   type: 'relationship',
   resource,
   name,
   isArray: true,
 });
 
-const attribute = ({ name, isType, cast, defaultValue, nullable = false }) => ({
+const attribute = (
+  { name, isType, cast, defaultValue, nullable = false }: AttributeParams
+): StaticAttribute => ({
   type: 'attribute',
   name,
   cast: (value) => {
@@ -114,7 +123,10 @@ const attribute = ({ name, isType, cast, defaultValue, nullable = false }) => ({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(string|function)} options.default Default value for this attribute
  */
-export const string = ({ name, default: defaultValue } = {}) => attribute({
+type stringDefault = (any) => string | string;
+export const string = (
+  { name, default: defaultValue }: { name?: string, default?: stringDefault } = {}
+) => attribute({
   isType: (value) => typeof value === 'string',
   cast: (value) => (typeof value === 'object' ? '' : String(value)),
   nullable: true,
@@ -141,7 +153,10 @@ export const string = ({ name, default: defaultValue } = {}) => attribute({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(number|function)} options.default Default value for this attribute
  */
-export const number = ({ name, default: defaultValue } = {}) => attribute({
+type numberDefault = (any) => number | number;
+export const number = (
+  { name, default: defaultValue }: { name?: string, default?: numberDefault } = {},
+) => attribute({
   isType: (value) => typeof value === 'number',
   cast: parseFloat,
   nullable: true,
@@ -168,7 +183,10 @@ export const number = ({ name, default: defaultValue } = {}) => attribute({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(date|function)} options.default Default value for this attribute
  */
-export const date = ({ name, default: defaultValue } = {}) => attribute({
+type dateDefault = (any) => Date | Date;
+export const date = (
+  { name, default: defaultValue }: { name?: string, default?: dateDefault } = {}
+) => attribute({
   isType: (value) => (
     Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())
   ),
@@ -203,7 +221,10 @@ export const date = ({ name, default: defaultValue } = {}) => attribute({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(boolean|function)} options.default Default value for this attribute
  */
-export const boolean = ({ name, default: defaultValue } = {}) => attribute({
+type booleanDefault = (any) => boolean | boolean;
+export const boolean = (
+  { name, default: defaultValue }: { name?: string, default?: booleanDefault } = {}
+) => attribute({
   isType: (value) => typeof value === 'boolean',
   cast: (value) => {
     if (/^(true|1)$/i.test(value)) return true;
@@ -234,7 +255,10 @@ export const boolean = ({ name, default: defaultValue } = {}) => attribute({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(array|function)} options.default Default value for this attribute
  */
-export const array = ({ name, default: defaultValue } = {}) => attribute({
+type arrayDefault = (any) => Array<any> | Array<any>;
+export const array = (
+  { name, default: defaultValue }: { name?: string, default?: arrayDefault } = {}
+) => attribute({
   isType: (value) => Array.isArray(value),
   cast: (value) => [value],
   nullable: true,
@@ -261,7 +285,9 @@ export const array = ({ name, default: defaultValue } = {}) => attribute({
  * @param {string} options.name JSON-API name of the attribute
  * @param {(object|function)} options.default Default value for this attribute
  */
-export const object = ({ name, default: defaultValue } = {}) => attribute({
+export const object = (
+  { name, default: defaultValue }: { name?: string, default?: any } = {}
+) => attribute({
   isType: (value) => typeof value === 'object',
   cast: () => ({}),
   nullable: true,
