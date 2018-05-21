@@ -1,3 +1,4 @@
+import { ExtensibleReducer } from '../types';
 import { createReducer } from './utils';
 import baseReducer from './reducer';
 
@@ -40,4 +41,4 @@ export { default as namespace } from './namespace';
  * @param {Object} state
  * @param {Object} action
  */
-export const reducer = createReducer(baseReducer);
+export const reducer: ExtensibleReducer = createReducer(baseReducer);

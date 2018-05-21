@@ -24,9 +24,9 @@ const indexArray = (options, data) => new Index(
 /**
  * Action Names
  */
-const API_WILL_INDEX = 'AR_API_WILL_INDEX';
-const API_INDEX_DONE = 'AR_API_INDEX_DONE';
-const API_INDEX_CLEAR = 'AR_API_INDEX_CLEAR';
+const API_WILL_INDEX: string = 'AR_API_WILL_INDEX';
+const API_INDEX_DONE: string = 'AR_API_INDEX_DONE';
+const API_INDEX_CLEAR: string = 'AR_API_INDEX_CLEAR';
 
 /**
  * Actions

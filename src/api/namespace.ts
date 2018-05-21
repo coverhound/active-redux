@@ -1,7 +1,7 @@
 /**
  * @private
  */
-class Namespace {
+export class Namespace {
   namespace: string;
   constructor(value) { this.namespace = value; }
   get value() { return this.namespace; }

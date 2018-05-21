@@ -19,6 +19,12 @@ export interface Relationship {
 export type Attribute = StaticAttribute | Relationship;
 
 export interface AttributeMap { [s: string]: Attribute }
+export interface EndpointsMap {
+  create: string;
+  read: string;
+  update: string;
+  delete: string;
+}
 
 export interface JSONAPIObject {
   id: string;
@@ -26,10 +32,10 @@ export interface JSONAPIObject {
   attributes?: Object;
 }
 
-export interface ModelBaseClass extends Function {
-  new(data: Object): ModelBaseClass;
-  attributes?: AttributeMap;
-  endpoints?: Object;
+export interface ModelBaseClass {
+  new(data: any): any;
+  attributes: AttributeMap;
+  endpoints: EndpointsMap;
 }
 
 export interface AnyReducer extends Reducer<any> {}

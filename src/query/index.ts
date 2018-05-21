@@ -19,13 +19,12 @@ const mapToModel = (Model) => (data: DataArray = []) => {
 };
 
 export default class QueryProxy {
-  store = Store;
+  private store = Store;
   model: any;
   init: any;
   map: (any) => DataArray;
 
   constructor(model) {
-    this.store = Store;
     this.model = model;
 
     this.init = toModel(model);

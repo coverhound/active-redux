@@ -19,7 +19,8 @@ const missingStore = () => (
   `)
 );
 
-class Store {
+// @internal
+export class Store {
   _store: ReduxStore;
 
   bind(store) {

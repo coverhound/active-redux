@@ -3,6 +3,8 @@
   "version": "1.0.1-beta.7",
   "main": "lib/active-redux.js",
   "module": "lib/active-redux.es.js",
+  "jsnext:main": "lib/active-redux.es.js",
+  "typings": "lib/active-redux.d.ts",
   "license": "MIT",
   "scripts": {
     "lint": "eslint src",
@@ -15,6 +17,7 @@
   },
   "files": [
     "lib",
+    "src",
     "README.md"
   ],
   "dependencies": {
@@ -58,7 +61,8 @@
     "rollup-plugin-filesize": "^1.5.0",
     "rollup-plugin-typescript2": "^0.13.0",
     "ts-jest": "^22.4.5",
-    "typescript": "^2.8.3"
+    "typescript": "^2.8.3",
+    "typescript-eslint-parser": "^15.0.0"
   },
   "peerDependencies": {
     "redux": "^3.6.0",

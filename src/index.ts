@@ -1,15 +1,15 @@
 import Store from './store';
 import * as Attr from './attributes';
-import * as apiTmp from './api';
-import { extension as indexing } from './indexing';
+import * as api from './api';
+// import { extension as indexing } from './indexing';
 
 export { default as define } from './model';
 
-const api = Object.assign(
-  {},
-  apiTmp,
-  { reducer: apiTmp.reducer.extend(indexing) },
-);
+// const api = Object.assign(
+//   {},
+//   apiTmp,
+//   { reducer: apiTmp.reducer.extend(indexing) },
+// );
 
 /**
   * Registers the store to the model for .where/.find/.all queries

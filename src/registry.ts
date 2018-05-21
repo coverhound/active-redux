@@ -2,7 +2,7 @@
  * The registry hangs onto our models for lookup by type
  * @private
  */
-class Registry {
+export class Registry {
   models = {};
 
   get(name) {

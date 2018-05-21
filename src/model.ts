@@ -98,6 +98,126 @@ export const parseParams = (context, string) => {
   return string.replace(regexp, (match) => context[match.substring(1)]);
 };
 
+export class Model {
+  static type: string;
+  static attributes = {};
+  static endpoints = {
+    create: ':type',
+    read: ':type',
+    update: ':type/:id',
+    delete: ':type/:id',
+  };
+  static relationships = {};
+
+  /**
+    * @private
+    */
+  static _queryProxy: QueryProxy;
+  static get queryProxy() {
+    this._queryProxy = this._queryProxy || new QueryProxy(this);
+    return this._queryProxy;
+  }
+
+  /**
+    * Retrieves a resource from the store
+    * @see {@link module:active-redux/query.peek}
+    */
+  static peek(id) {
+    return this.queryProxy.peek(id);
+  }
+
+  /**
+    * Fetches a record from the server. Will serve a cached version if available.
+    * @see {@link module:active-redux/store.find}
+    * @param {String|Number} id
+    * @return {RecordPromise<Model|null>}
+    */
+  static find(id) {
+    return this.queryProxy.find(id);
+  }
+
+  /**
+    *
+    */
+  static get select() {
+    return this.queryProxy.select;
+  }
+
+  /**
+    * Gets all of that resource in the store
+    * @see {@link module:active-redux/store.peekAll}
+    * @return {RecordPromise<Array<Model>>}
+    */
+  static peekAll(options) {
+    return this.queryProxy.find(options);
+  }
+
+  /**
+    * Fetches all of that record from the server. Will serve a cached version if available.
+    * @see {@link module:active-redux/store.findAll}
+    * @return {RecordPromise<Array<Model>>}
+    */
+  static findAll(options) {
+    return this.queryProxy.find(options);
+  }
+
+  /**
+    *
+    */
+  static get selectAll() {
+    return this.queryProxy.selectAll;
+  }
+
+  /**
+    * Fetches a query from the server.
+    * @see {@link module:active-redux/store.query}
+    * @return {RecordPromise<Array<Model>>}
+    */
+  static query(query, options) {
+    return this.queryProxy.query(query, options);
+  }
+
+  /**
+    *
+    */
+  static get selectQuery() {
+    return this.queryProxy.selectQuery;
+  }
+
+  /**
+  * Find the endpoint for a specific action
+  * @private
+  */
+  static endpoint(action, params: ModelBaseClass = this): string {
+    return parseParams(params, this.endpoints[action]);
+  }
+
+  /**
+  * @private
+  * @see Model.endpoint
+  */
+  endpoint(action) {
+    return Model.endpoint(action, this);
+  }
+
+  /**
+    * @param {data: Object} data JSON-API data
+    */
+  data: JSONAPIObject;
+  constructor(data) {
+    Object.getPrototypeOf(Model).call(this, data);
+    this.data = data;
+  }
+
+  get id() {
+    return this.data.id;
+  }
+
+  get type() {
+    return Model.type;
+  }
+}
+
 /**
   * Defines a model
   * @alias module:active-redux.define
@@ -108,161 +228,18 @@ export const parseParams = (context, string) => {
   * @param {Class} [model] - Class to extend
   * @return {Model}
   */
-export default function (type: string, model: ModelBaseClass) {
+export default function (type: string, model: ModelBaseClass): Model {
   /**
    * Active Redux Model
    * @property {String|Number} id JSON-API Resource ID
    * @property {String} type JSON-API Resource Type
    */
-  class Model extends model {
+  const NewModel = class extends Model {};
+  Object.assign(NewModel.prototype, model.prototype, Model.prototype);
 
-    /**
-    * JSON-API type of the model
-    * @private
-    */
-    static type = type;
-
-    /**
-    * Attributes of a model, for which methods will be defined
-    * @see {@link module:active-redux/attributes}
-    * @example
-    * import { Attr, define } from 'active-redux';
-    *
-    * const Person = define('people', class Person {
-    *   static attributes = {
-    *     name: Attr.string(),
-    *   }
-    * });
-    *
-    * const joe = new Person({ attributes: { name: "Joe" } });
-    * joe.name // => "Joe"
-    */
-    static attributes = model.attributes || {};
-
-    /**
-    * Endpoints that will be queried. Can be overwritten.
-    * @private
-    */
-    static endpoints = model.endpoints || {
-      create: ':type',
-      read: ':type',
-      update: ':type/:id',
-      delete: ':type/:id',
-    };
-
-    /**
-    * @private
-    */
-    static relationships = {};
-
-    /**
-     * @private
-     */
-    static _queryProxy: QueryProxy;
-    static get queryProxy() {
-      this._queryProxy = this._queryProxy || new QueryProxy(this);
-      return this._queryProxy;
-    }
-
-    /**
-     * Retrieves a resource from the store
-     * @see {@link module:active-redux/query.peek}
-     */
-    static peek(id) {
-      return this.queryProxy.peek(id);
-    }
-
-    /**
-     * Fetches a record from the server. Will serve a cached version if available.
-     * @see {@link module:active-redux/store.find}
-     * @param {String|Number} id
-     * @return {RecordPromise<Model|null>}
-     */
-    static find(id) {
-      return this.queryProxy.find(id);
-    }
-
-    /**
-     *
-     */
-    static get select() {
-      return this.queryProxy.select;
-    }
-
-    /**
-     * Gets all of that resource in the store
-     * @see {@link module:active-redux/store.peekAll}
-     * @return {RecordPromise<Array<Model>>}
-     */
-    static peekAll(options) {
-      return this.queryProxy.find(options);
-    }
-
-    /**
-     * Fetches all of that record from the server. Will serve a cached version if available.
-     * @see {@link module:active-redux/store.findAll}
-     * @return {RecordPromise<Array<Model>>}
-     */
-    static findAll(options) {
-      return this.queryProxy.find(options);
-    }
-
-    /**
-     *
-     */
-    static get selectAll() {
-      return this.queryProxy.selectAll;
-    }
-
-    /**
-     * Fetches a query from the server.
-     * @see {@link module:active-redux/store.query}
-     * @return {RecordPromise<Array<Model>>}
-     */
-    static query(query, options) {
-      return this.queryProxy.query(query, options);
-    }
-
-    /**
-     *
-     */
-    static get selectQuery() {
-      return this.queryProxy.selectQuery;
-    }
-
-    /**
-    * Find the endpoint for a specific action
-    * @private
-    */
-    static endpoint(action, params: ModelBaseClass = this): string {
-      return parseParams(params, this.endpoints[action]);
-    }
-
-    /**
-    * @private
-    * @see Model.endpoint
-    */
-    endpoint(action) {
-      return Model.endpoint(action, this);
-    }
-
-    /**
-     * @param {data: Object} data JSON-API data
-     */
-    data: JSONAPIObject;
-    constructor(data) {
-      super(data);
-      this.data = data;
-    }
-
-    get id() {
-      return this.data.id;
-    }
-
-    get type() {
-      return Model.type;
-    }
-  }
+  NewModel.type = type;
+  NewModel.attributes = NewModel.attributes || model.attributes;
+  NewModel.endpoints = NewModel.endpoints || model.endpoints;
 
   copyClassName(model, Model);
   Model.relationships = defineMethods(Model, Model.attributes);
