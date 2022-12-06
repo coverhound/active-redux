@@ -20,7 +20,7 @@
     "object-path-immutable": "^0.5.0",
     "object.entries": "^1.0.4",
     "object.values": "^1.0.4",
-    "qs": "^6.5.1",
+    "qs": "^6.5.3",
     "reselect": "^3.0.1"
   },
   "devDependencies": {
